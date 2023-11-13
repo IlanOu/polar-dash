@@ -28,7 +28,7 @@ To test this project, you can clone it with the following command:
 git clone https://github.com/IlanOu/Motion-game.git
 ```
 
-Be sure to use the Unity version: `2022.3.5`.
+Be sure to use the Unity version: `2022.3.12f1`.
 
 ## Project Progress
 
