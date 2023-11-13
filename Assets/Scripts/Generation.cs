@@ -23,7 +23,6 @@ public class Generation : MonoBehaviour
             GameObject instantiatedMap = Instantiate(mapPrefab, new Vector3(offsetX, offsetY, 0), Quaternion.identity);
             PositionMap(instantiatedMap, offsetX, offsetY);
             offsetX += GetMapWidth(instantiatedMap);
-            Debug.Log(GetMapWidth(instantiatedMap));
 
             InstantiatedMapsList.Add(instantiatedMap);
         }
@@ -60,6 +59,7 @@ public class Generation : MonoBehaviour
             }
         }
     }
+
 
 
 
@@ -110,6 +110,28 @@ public class Generation : MonoBehaviour
             return 0f;
         }
     }
+
+
+
+
+    Vector3 GetTotalBoundsSize(GameObject obj)
+    {
+        Transform[] children = obj.GetComponentsInChildren<Transform>();
+        Vector3 totalSize = Vector3.zero;
+
+        foreach (Transform child in children)
+        {
+            Renderer childRenderer = child.GetComponent<Renderer>();
+
+            if (childRenderer != null)
+            {
+                totalSize += childRenderer.bounds.size;
+            }
+        }
+
+        return totalSize;
+    }
+
 
 
 
