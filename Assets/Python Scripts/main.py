@@ -1,43 +1,18 @@
 import cv2
 import time
-import PoseModule
-import mediapipe as mp
-import numpy as np
-import random
 import UdpComms as U
-import poseDetection as pd
+from poseDetection import PoseDetection as pd
 import globals_vars as gv
 
 # Create UDP socket to use for sending (and receiving)
 sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
-
-def coliderCircle(centerPos, radius, handPos):
-    centerX, centerY = centerPos
-    handX, handY = handPos
-
-    # Utilisez la distance euclidienne pour vérifier si le point est à l'intérieur du cercle
-    distance = ((handX - centerX) ** 2 + (handY - centerY) ** 2) ** 0.5
-
-    if distance <= radius:
-        return True
-    else:
-        return False
-
-def getRightPointPosition(lmList, point):
-
-    try:
-        xPos = lmList[point][1]
-        yPos = lmList[point][2]
-    except:
-        xPos = 0
-        yPos = 0
-    return (xPos, yPos)
 
 def printRect(img, first_point, second_point):
     first_x, first_y = first_point
     second_x, second_y = second_point
     cv2.rectangle(img, (first_x, first_y), (second_x, second_y), gv.RED, 2)
 
+# A voir si on garde
 def default_view():
     text_top_left_corner = (gv.TOP_LEFT_CORNER[0][0], gv.TOP_LEFT_CORNER[0][1] + gv.CARACTER_HEIGHT)
     text_top_right_corner = (gv.TOP_RIGHT_CORNER[0][0], gv.TOP_RIGHT_CORNER[0][1] + gv.CARACTER_HEIGHT)
@@ -61,67 +36,67 @@ def default_view():
     printRect(img, gv.BOT_RIGHT_CORNER[0], gv.BOT_RIGHT_CORNER[1])
     printRect(img, gv.CENTER[0], gv.CENTER[1])
 
+def detection_jump(poseDetection):
+    global time_to_jump
+    if counter > 500:
+        if not time_to_jump:
+            time_to_jump = True
+        poseDetection.isJump()
+    else:
+        poseDetection.add_y_point()
+
+
 
 cap = cv2.VideoCapture(0)
 pTime = 0
-detector = PoseModule.poseDetector()
 screenSize = (gv.WIDTH, gv.HEIGHT)
-# screenSize = (1920, 1080)
+
+left_poseDetection = pd()
+right_poseDetection = pd()
 
 # & Variables
-
 counter = 0
 counterLimit = 10000
+time_to_jump = False
 
 while True:
-
     counter += 1
-    if counter % 4 ==  0:
+    if counter % 5 ==  0:
         success, img = cap.read()
-        
         if not success:
             break
-        
         img = cv2.resize(img, screenSize)
         img = cv2.flip(img,1)
-        
-        img = detector.findPose(img, gv.SHOW_BONES)
-        lmList = detector.getPosition(img, False)
 
-        try:
-            length = lmList[19][2]
-        except Exception as e:
-            length = 0
-            print(e)
+        cv2.line(img, (gv.SCREEN_SEPARATOR, 0), (gv.SCREEN_SEPARATOR, gv.HEIGHT), gv.BLACK, 2)
+
+        # Screen separation
+        left_poseDetection.img = img[:, :gv.SCREEN_SEPARATOR]
+        right_poseDetection.img = img[:, gv.SCREEN_SEPARATOR:]
             
-
+        left_poseDetection.refreshPose()
+        right_poseDetection.refreshPose()
         
 
         #& ----------------------------- MES FONCTIONS -----------------------------
 
-        handPosRight = getRightPointPosition(lmList, gv.RIGHT_INDEX)    
-        handPosLeft = getRightPointPosition(lmList, gv.LEFT_INDEX)
+        # handPosRight = getRightPointPosition(lmList, gv.RIGHT_INDEX)    
+        # handPosLeft = getRightPointPosition(lmList, gv.LEFT_INDEX)
 
         # JUMP
-        jump = False
-        if counter > 500:
-            if pd.isJump(lmList):
-                jump = True
-        else:
-            pd.add_y_point(lmList)
+        detection_jump(left_poseDetection)
+        detection_jump(right_poseDetection)
 
         # CORNER
-        is_top_left, is_top_right, is_bot_left, is_bot_right, is_center = pd.getCorner(handPosRight, handPosLeft)
+        # is_top_left, is_top_right, is_bot_left, is_bot_right, is_center = pd.getCorner(handPosRight, handPosLeft)
 
         # OLD DEFINE MOVEMENT
-        movementType = pd.getMovementType(handPosRight, handPosLeft)
+        # movementType = pd.getMovementType(handPosRight, handPosLeft)
 
         # SQUAT
-        squat = pd.isSquat(lmList)
+        # squat = pd.isSquat(lmList)
                 
         #& --------------------------- PAS MES FONCTIONS ----------------------------
-
-
 
         cTime = time.time()
         fps = 1 / (cTime - pTime)
@@ -133,11 +108,16 @@ while True:
         
         # default_view()
 
-        if squat:
-            cv2.putText(img, f"SQUAT", (int(gv.WIDTH/2 - (gv.CARACTER_WIDTH*5/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
+        # if squat:
+        #     cv2.putText(img, f"SQUAT", (int(gv.WIDTH/2 - (gv.CARACTER_WIDTH*5/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
 
-        # if jump:
-        #     cv2.putText(img, f"SAUTE", (int(gv.WIDTH/2 - (gv.CARACTER_WIDTH*5/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        if left_poseDetection.jump:
+            cv2.putText(left_poseDetection.img, f"SAUTE", (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*5/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.GREEN, 2)
+        if right_poseDetection.jump:
+            cv2.putText(right_poseDetection.img, f"SAUTE", (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*5/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.GREEN, 2)
+
+        if not time_to_jump:
+            cv2.putText(img, f"ATTENDEZ AVANT DE SAUTER", (int(gv.WIDTH/2 - (gv.CARACTER_WIDTH*24/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
 
 
         cv2.imshow("Webcam", img)
