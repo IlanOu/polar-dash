@@ -3,6 +3,7 @@ import time
 import UdpComms as U
 from poseDetection import PoseDetection as pd
 import globals_vars as gv
+import PoseModule
 
 # Create UDP socket to use for sending (and receiving)
 sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
@@ -38,7 +39,7 @@ def default_view():
 
 def detection_jump(poseDetection):
     global time_to_jump
-    if counter > 500:
+    if counter > 200:
         if not time_to_jump:
             time_to_jump = True
         poseDetection.isJump()
@@ -50,6 +51,8 @@ def detection_jump(poseDetection):
 cap = cv2.VideoCapture(0)
 pTime = 0
 screenSize = (gv.WIDTH, gv.HEIGHT)
+left_detector = PoseModule.poseDetector()
+right_detector = PoseModule.poseDetector()
 
 left_poseDetection = pd()
 right_poseDetection = pd()
@@ -59,23 +62,38 @@ counter = 0
 counterLimit = 10000
 time_to_jump = False
 
+
 while True:
     counter += 1
-    if counter % 5 ==  0:
+    if counter % 2 ==  0:
         success, img = cap.read()
         if not success:
             break
+        
         img = cv2.resize(img, screenSize)
         img = cv2.flip(img,1)
 
         cv2.line(img, (gv.SCREEN_SEPARATOR, 0), (gv.SCREEN_SEPARATOR, gv.HEIGHT), gv.BLACK, 2)
 
         # Screen separation
-        left_poseDetection.img = img[:, :gv.SCREEN_SEPARATOR]
-        right_poseDetection.img = img[:, gv.SCREEN_SEPARATOR:]
-            
-        left_poseDetection.refreshPose()
-        right_poseDetection.refreshPose()
+        left_img = img[:, :gv.SCREEN_SEPARATOR]
+        right_img = img[:, gv.SCREEN_SEPARATOR:]
+
+        # Get new position
+        left_img = left_detector.findPose(left_img, gv.SHOW_BONES)
+        left_lmList = left_detector.getPosition(left_img, False)
+        left_poseDetection.refreshPose(left_lmList)
+
+        right_img = right_detector.findPose(right_img, gv.SHOW_BONES)
+        right_lmList = right_detector.getPosition(right_img, False)
+        right_poseDetection.refreshPose(right_lmList) 
+        try:
+            length = left_lmList[19][2]
+            length = right_lmList[19][2]
+        except Exception as e:
+            length = 0
+            print(e)
+
         
 
         #& ----------------------------- MES FONCTIONS -----------------------------
@@ -112,9 +130,9 @@ while True:
         #     cv2.putText(img, f"SQUAT", (int(gv.WIDTH/2 - (gv.CARACTER_WIDTH*5/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
 
         if left_poseDetection.jump:
-            cv2.putText(left_poseDetection.img, f"SAUTE", (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*5/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.GREEN, 2)
+            cv2.putText(left_img, f"SAUTE", (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*5/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.GREEN, 2)
         if right_poseDetection.jump:
-            cv2.putText(right_poseDetection.img, f"SAUTE", (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*5/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.GREEN, 2)
+            cv2.putText(right_img, f"SAUTE", (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*5/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.GREEN, 2)
 
         if not time_to_jump:
             cv2.putText(img, f"ATTENDEZ AVANT DE SAUTER", (int(gv.WIDTH/2 - (gv.CARACTER_WIDTH*24/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)

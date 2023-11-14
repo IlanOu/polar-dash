@@ -47,21 +47,14 @@ class PoseDetection:
         },
     }
 
-    detector = PoseModule.poseDetector()
+    
     nose_y_points = [] # Use for avg value of nose
     lmList = None
-    img = None
     jump = False
     squat = False
 
-    def refreshPose(self):
-        self.img = self.detector.findPose(self.img, gv.SHOW_BONES)
-        self.lmList = self.detector.getPosition(self.img, False)
-        try:
-            length = self.lmList[19][2]
-        except Exception as e:
-            length = 0
-            print(e)
+    def refreshPose(self, lmList):
+        self.lmList = lmList
 
     def pointPosition(self, point):
         try:
