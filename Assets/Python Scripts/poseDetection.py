@@ -1,4 +1,5 @@
 from statistics import mean 
+import math
 import globals_vars as gv
 import PoseModule
 
@@ -47,13 +48,34 @@ class PoseDetection:
         },
     }
 
-    
+    print_active = True
     nose_y_points = [] # Use for avg value of nose
     lmList = None
     jump = False
     squat = False
 
+    def calcul_distance(self, point1, point2):
+        return math.sqrt((point1[1] - point2[1])**2 + (point1[2] - point2[2])**2)
+    
+    def auto_config(self):
+        try:
+            hip = self.lmList[gv.LEFT_HIP]
+            knee = self.lmList[gv.LEFT_KNEE]
+            femur_size = self.calcul_distance(hip, knee)
+            return femur_size
+        except Exception as e:
+            if self.print_active:
+                print(e)
+        return None
+
     def refreshPose(self, lmList):
+        # Try = test d'erreur 
+        try:
+            length = lmList[19][2]
+        except Exception as e:
+            length = 0
+            if self.print_active:
+                print(e)
         self.lmList = lmList
 
     def pointPosition(self, point):
@@ -121,29 +143,32 @@ class PoseDetection:
             try:
                 self.nose_y_points.append(self.lmList[gv.NOSE][2])
             except Exception as e:
-                print(e)
+                if self.print_active:
+                    print(e)
 
-    def isJump(self):
+    def isJump(self, jump_range):
         if len(self.nose_y_points) > 0:
             try:
                 nose_y = self.lmList[gv.NOSE][2]
                 avg_y_points = mean(self.nose_y_points)
-                if nose_y < avg_y_points - gv.JUMP_RANGE:
+                if nose_y < avg_y_points - jump_range:
                     self.jump = True
                     return
             except Exception as e:
-                print(e)
+                if self.print_active:
+                    print(e)
         self.jump = False
 
-    def isSquat(self):
+    def isSquat(self, squat_range):
         try:
             left_hip_y = self.lmList[gv.LEFT_HIP][2]
             left_knee_y = self.lmList[gv.LEFT_KNEE][2]
             left_ankle_y = self.lmList[gv.LEFT_ANKLE][2]
-            # print(f"hip: {left_hip_y} // knee: {left_knee_y} // ankle: {left_ankle_y}")
-            if left_hip_y >= left_knee_y - gv.SQUAT_RANGE and left_knee_y >= left_ankle_y - gv.SQUAT_RANGE:
-                return True
+            if left_knee_y - left_hip_y < squat_range:
+                self.squat = True
+                return
         except Exception as e:
-            print(e)
-        return False
+            if self.print_active:
+                print(e)
+        self.squat = False
     
