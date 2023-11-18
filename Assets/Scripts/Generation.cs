@@ -1,188 +1,97 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Generation : MonoBehaviour
 {
-    
     public List<GameObject> Maps = new List<GameObject>();
     private List<GameObject> InstantiatedMapsList = new List<GameObject>();
-
     public string layerName = "Ground";
-    
 
-
-    
     void Start()
     {
-        float offsetX = 0f;
-        float offsetY = 0f;
-
+        float offsetX = 0;
         foreach (var mapPrefab in Maps)
         {
-            GameObject instantiatedMap = Instantiate(mapPrefab, new Vector3(offsetX, offsetY, 0), Quaternion.identity);
-            PositionMap(instantiatedMap, offsetX, offsetY);
-            offsetX += GetMapWidth(instantiatedMap);
-
+            float mapWidth = GetWidthInPixels(mapPrefab.transform);
+            GameObject instantiatedMap = Instantiate(mapPrefab, new Vector3((mapWidth/2) + offsetX, 0, 0), Quaternion.identity);
             InstantiatedMapsList.Add(instantiatedMap);
+            offsetX += mapWidth;
         }
     }
 
 
-
-    void PositionMap(GameObject currentMap, float offsetX, float offsetY)
+    /// <summary>
+    /// Permet d'obtenir la largeur d'une map
+    /// </summary>
+    public float GetWidthInPixels(Transform parentTransform)
     {
+        float leftmostPoint = float.MaxValue;
+        float rightmostPoint = float.MinValue;
 
-        if (offsetX == 0f)
+        foreach (Transform child in parentTransform)
         {
-            currentMap.transform.position = new Vector3(offsetX, offsetY, 0);
-        }
-        else
-        {
-            GameObject previousMap = GetPreviousMap();
-            
+            // Ensure the child has a SpriteRenderer attached
+            SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
 
-            // Logique de positionnement ajustée
-            Transform leftObject = GetExtremeChild(currentMap, false); // false = Left object
-            Transform rightObjectPreviousMap = GetExtremeChild(previousMap, true); // true = Right object
-
-            if (leftObject != null && rightObjectPreviousMap != null){
-                float topmostPointLeft = GetTopmostPoint(leftObject);
-                float topmostPointRightPreviousMap = GetTopmostPoint(rightObjectPreviousMap);
-
-                float heightAdjustment = topmostPointRightPreviousMap - topmostPointLeft;
-
-
-                currentMap.transform.position = new Vector3(currentMap.transform.position.x, currentMap.transform.position.y + heightAdjustment, 0);
-            }else{
-                Debug.LogError("Aucun objet nommé "+layerName+" dans la map.");
-            }
-        }
-    }
-
-
-
-
-
-    GameObject GetPreviousMap()
-    {
-        int index = InstantiatedMapsList.Count - 1;
-        return index >= 0 ? InstantiatedMapsList[index] : null;
-    }
-
-
-    float GetMapWidth(GameObject map)
-    {
-        Transform[] children = map.GetComponentsInChildren<Transform>(false);
-
-        float leftmostEdge = float.MaxValue;
-        float rightmostEdge = float.MinValue;
-
-        foreach (Transform child in children)
-        {
-            Renderer childRenderer = child.GetComponent<Renderer>();
-
-            if (childRenderer != null)
+            if (spriteRenderer != null)
             {
-                float childLeftEdge = childRenderer.bounds.min.x;
-                float childRightEdge = childRenderer.bounds.max.x;
+                // Calculate the leftmost and rightmost points
+                float positionX = child.position.x;
+                float halfWidth = spriteRenderer.bounds.size.x * 0.5f;
 
-                if (childLeftEdge < leftmostEdge)
-                {
-                    leftmostEdge = childLeftEdge;
-                }
+                float left = positionX - halfWidth;
+                float right = positionX + halfWidth;
 
-                if (childRightEdge > rightmostEdge)
-                {
-                    rightmostEdge = childRightEdge;
-                }
+                // Update the leftmost and rightmost points
+                leftmostPoint = Mathf.Min(leftmostPoint, left);
+                rightmostPoint = Mathf.Max(rightmostPoint, right);
             }
-        }
-
-        // Vérifier si des objets ont été trouvés pour éviter une largeur négative si la map est vide
-        if (leftmostEdge <= rightmostEdge)
-        {
-            return rightmostEdge - leftmostEdge;
-        }
-        else
-        {
-            // Aucun objet trouvé, la largeur est zéro ou négative
-            return 0f;
-        }
-    }
-
-
-
-
-    Vector3 GetTotalBoundsSize(GameObject obj)
-    {
-        Transform[] children = obj.GetComponentsInChildren<Transform>();
-        Vector3 totalSize = Vector3.zero;
-
-        foreach (Transform child in children)
-        {
-            Renderer childRenderer = child.GetComponent<Renderer>();
-
-            if (childRenderer != null)
+            else
             {
-                totalSize += childRenderer.bounds.size;
+                Debug.LogError("Some children do not have a SpriteRenderer.");
             }
         }
 
-        return totalSize;
+        // Calculate the total width in pixels
+        float totalWidthInPixels = (rightmostPoint - leftmostPoint) * parentTransform.localScale.x;
+        return totalWidthInPixels;
     }
 
 
 
-
-
-    float GetTopmostPoint(Transform obj)
+    public float GetHeightInPixels(Transform parentTransform)
     {
+        float bottommostPoint = float.MaxValue;
         float topmostPoint = float.MinValue;
-        Renderer renderer = obj.GetComponent<Renderer>();
 
-        if (renderer != null)
+        foreach (Transform child in parentTransform)
         {
-            topmostPoint = renderer.bounds.max.y;
-        }
+            // Ensure the child has a SpriteRenderer attached
+            SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
 
-        return topmostPoint;
-    }
+            if (spriteRenderer != null)
+            {
+                // Calculate the bottommost and topmost points
+                float positionY = child.position.y;
+                float halfHeight = spriteRenderer.bounds.size.y * 0.5f;
 
+                float bottom = positionY - halfHeight;
+                float top = positionY + halfHeight;
 
-
-
-    Transform GetExtremeChild(GameObject obj, bool rightmost)
-    {
-        Transform[] children = obj.GetComponentsInChildren<Transform>(false);
-
-        if (children.Length == 0)
-        {
-            return null; // Aucun enfant trouvé, retourne null
-        }
-
-        float extremeBoundX = rightmost ? float.MinValue : float.MaxValue;
-        Transform extremeChild = null;
-
-        foreach (Transform child in children)
-        {
-            if (child.gameObject.layer == LayerMask.NameToLayer(layerName)){
-
-                Renderer childRenderer = child.GetComponent<Renderer>();
-
-                if (childRenderer != null)
-                {
-                    float childBoundX = childRenderer.bounds.min.x;
-
-                    if ((rightmost && childBoundX > extremeBoundX) || (!rightmost && childBoundX < extremeBoundX))
-                    {
-                        extremeBoundX = childBoundX;
-                        extremeChild = child;
-                    }
-                }
+                // Update the bottommost and topmost points
+                bottommostPoint = Mathf.Min(bottommostPoint, bottom);
+                topmostPoint = Mathf.Max(topmostPoint, top);
+            }
+            else
+            {
+                Debug.LogError("Some children do not have a SpriteRenderer.");
             }
         }
 
-        return extremeChild;
+        // Calculate the total height in pixels
+        float totalHeightInPixels = (topmostPoint - bottommostPoint) * parentTransform.localScale.y;
+        return totalHeightInPixels;
     }
 }

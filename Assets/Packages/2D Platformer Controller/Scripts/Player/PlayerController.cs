@@ -87,11 +87,13 @@ namespace SupanthaPaul
 			isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
 			var position = transform.position;
 			// check if on wall
+			
+/*
 			m_onWall = Physics2D.OverlapCircle((Vector2)position + grabRightOffset, grabCheckRadius, whatIsGround)
 			          || Physics2D.OverlapCircle((Vector2)position + grabLeftOffset, grabCheckRadius, whatIsGround);
 			m_onRightWall = Physics2D.OverlapCircle((Vector2)position + grabRightOffset, grabCheckRadius, whatIsGround);
 			m_onLeftWall = Physics2D.OverlapCircle((Vector2)position + grabLeftOffset, grabCheckRadius, whatIsGround);
-
+ */
 			// calculate player and wall sides as integers
 			CalculateSides();
 
@@ -103,6 +105,7 @@ namespace SupanthaPaul
 			if (isCurrentlyPlayable)
 			{
 				// horizontal movement
+/* 
 				if(m_wallJumping)
 				{
 					m_rb.velocity = Vector2.Lerp(m_rb.velocity, (new Vector2(moveInput * speed, m_rb.velocity.y)), 1.5f * Time.fixedDeltaTime);
@@ -113,12 +116,15 @@ namespace SupanthaPaul
 						m_rb.velocity = new Vector2(moveInput * speed, m_rb.velocity.y);
 					else if(!canMove)
 						m_rb.velocity = new Vector2(0f, m_rb.velocity.y);
-				}
+				} 
+*/
+				m_rb.velocity = new Vector2(speed, m_rb.velocity.y);
 				// better jump physics
 				if (m_rb.velocity.y < 0f)
 				{
 					m_rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
 				}
+
 
 				// Flipping
 				if (!m_facingRight && moveInput > 0f)
@@ -127,6 +133,7 @@ namespace SupanthaPaul
 					Flip();
 
 				// Dashing logic
+/* 
 				if (isDashing)
 				{
 					if (m_dashTime <= 0f)
@@ -144,9 +151,11 @@ namespace SupanthaPaul
 						else
 							m_rb.velocity = Vector2.left * dashSpeed;
 					}
-				}
+				} 
+*/
 
 				// wall grab
+/* 
 				if(m_onWall && !isGrounded && m_rb.velocity.y <= 0f && m_playerSide == m_onWallSide)
 				{
 					actuallyWallGrabbing = true;    // for animation
@@ -172,7 +181,8 @@ namespace SupanthaPaul
 				else if(!m_dustParticle.isPlaying && playerVelocityMag > 0f)
 				{
 					m_dustParticle.Play();
-				}
+				} 
+*/
 
 			}
 		}
