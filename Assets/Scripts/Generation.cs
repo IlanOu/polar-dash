@@ -9,18 +9,44 @@ public class Generation : MonoBehaviour
     private List<GameObject> InstantiatedMapsList = new List<GameObject>();
     public string layerName = "Ground";
 
-    void Start()
+    public Transform player; // Assign the player's transform in the inspector
+    public float chunkTriggerDistance = 10f; // Distance at which a new chunk should be generated
+
+    float offsetX = 0;
+    int currentIndex = 0;
+
+    public int maxMapNumber = 10;
+
+    void Update()
     {
-        float offsetX = 0;
-        foreach (var mapPrefab in Maps)
+        // Calculate the distance between the player and the last instantiated chunk
+        float distanceToLastChunk = Mathf.Abs(player.position.x - (offsetX - GetWidthInPixels(Maps[currentIndex].transform) / 2));
+
+        // Generate a new chunk if the player is close enough to the last one
+        if (distanceToLastChunk < chunkTriggerDistance)
         {
-            float mapWidth = GetWidthInPixels(mapPrefab.transform);
-            GameObject instantiatedMap = Instantiate(mapPrefab, new Vector3((mapWidth/2) + offsetX, 0, 0), Quaternion.identity);
-            InstantiatedMapsList.Add(instantiatedMap);
-            offsetX += mapWidth;
+            GenerateMap();
         }
     }
 
+    void GenerateMap()
+    {
+        var mapPrefab = Maps[currentIndex];
+        float mapWidth = GetWidthInPixels(mapPrefab.transform);
+        GameObject instantiatedMap = Instantiate(mapPrefab, new Vector3((mapWidth / 2) + offsetX, 0, 0), Quaternion.identity);
+        InstantiatedMapsList.Add(instantiatedMap);
+        offsetX += mapWidth;
+
+        // Pass to the next map, and loop back to the first if it reaches the end
+        currentIndex = (currentIndex + 1) % Maps.Count;
+
+        // Destroy the oldest chunk if the number of instantiated chunks exceeds a certain limit
+        if (InstantiatedMapsList.Count > maxMapNumber)
+        {
+            Destroy(InstantiatedMapsList[0]);
+            InstantiatedMapsList.RemoveAt(0);
+        }
+    }
 
     /// <summary>
     /// Permet d'obtenir la largeur d'une map
@@ -32,25 +58,28 @@ public class Generation : MonoBehaviour
 
         foreach (Transform child in parentTransform)
         {
-            // Ensure the child has a SpriteRenderer attached
-            SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
-
-            if (spriteRenderer != null)
+            if (child.gameObject.layer == LayerMask.NameToLayer(layerName))
             {
-                // Calculate the leftmost and rightmost points
-                float positionX = child.position.x;
-                float halfWidth = spriteRenderer.bounds.size.x * 0.5f;
+                // Ensure the child has a SpriteRenderer attached
+                SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
 
-                float left = positionX - halfWidth;
-                float right = positionX + halfWidth;
+                if (spriteRenderer != null)
+                {
+                    // Calculate the leftmost and rightmost points
+                    float positionX = child.position.x;
+                    float halfWidth = spriteRenderer.bounds.size.x * 0.5f;
 
-                // Update the leftmost and rightmost points
-                leftmostPoint = Mathf.Min(leftmostPoint, left);
-                rightmostPoint = Mathf.Max(rightmostPoint, right);
-            }
-            else
-            {
-                Debug.LogError("Some children do not have a SpriteRenderer.");
+                    float left = positionX - halfWidth;
+                    float right = positionX + halfWidth;
+
+                    // Update the leftmost and rightmost points
+                    leftmostPoint = Mathf.Min(leftmostPoint, left);
+                    rightmostPoint = Mathf.Max(rightmostPoint, right);
+                }
+                else
+                {
+                    Debug.LogError("Some children do not have a SpriteRenderer.");
+                }
             }
         }
 
@@ -59,39 +88,4 @@ public class Generation : MonoBehaviour
         return totalWidthInPixels;
     }
 
-
-
-    public float GetHeightInPixels(Transform parentTransform)
-    {
-        float bottommostPoint = float.MaxValue;
-        float topmostPoint = float.MinValue;
-
-        foreach (Transform child in parentTransform)
-        {
-            // Ensure the child has a SpriteRenderer attached
-            SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
-
-            if (spriteRenderer != null)
-            {
-                // Calculate the bottommost and topmost points
-                float positionY = child.position.y;
-                float halfHeight = spriteRenderer.bounds.size.y * 0.5f;
-
-                float bottom = positionY - halfHeight;
-                float top = positionY + halfHeight;
-
-                // Update the bottommost and topmost points
-                bottommostPoint = Mathf.Min(bottommostPoint, bottom);
-                topmostPoint = Mathf.Max(topmostPoint, top);
-            }
-            else
-            {
-                Debug.LogError("Some children do not have a SpriteRenderer.");
-            }
-        }
-
-        // Calculate the total height in pixels
-        float totalHeightInPixels = (topmostPoint - bottommostPoint) * parentTransform.localScale.y;
-        return totalHeightInPixels;
-    }
 }

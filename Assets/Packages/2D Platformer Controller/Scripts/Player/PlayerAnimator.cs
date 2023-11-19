@@ -48,7 +48,7 @@ namespace SupanthaPaul
 			}
 
 			// dash animation
-			m_anim.SetBool(IsDashing, m_controller.isDashing);
+			// m_anim.SetBool(IsDashing, m_controller.isDashing);
 		}
 	}
 }

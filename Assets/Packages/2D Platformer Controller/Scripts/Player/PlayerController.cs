@@ -19,13 +19,13 @@ namespace SupanthaPaul
 		[SerializeField] private float startDashTime = 0.1f;
 		[Tooltip("Time (in seconds) between dashes")]
 		[SerializeField] private float dashCooldown = 0.2f;
-		[SerializeField] private GameObject dashEffect;
+		// [SerializeField] private GameObject dashEffect;
 
 		// Access needed for handling animation in Player script and other uses
 		[HideInInspector] public bool isGrounded;
 		[HideInInspector] public float moveInput;
 		[HideInInspector] public bool canMove = true;
-		[HideInInspector] public bool isDashing = false;
+		// [HideInInspector] public bool isDashing = false;
 		[HideInInspector] public bool actuallyWallGrabbing = false;
 		// controls whether this instance is currently playable or not
 		[HideInInspector] public bool isCurrentlyPlayable = false;
@@ -65,7 +65,7 @@ namespace SupanthaPaul
 		void Start()
 		{
 			// create pools for particles
-			PoolManager.instance.CreatePool(dashEffect, 2);
+			// PoolManager.instance.CreatePool(dashEffect, 2);
 			PoolManager.instance.CreatePool(jumpEffect, 2);
 
 			// if it's the player, make this instance currently playable
@@ -73,8 +73,8 @@ namespace SupanthaPaul
 				isCurrentlyPlayable = true;
 
 			m_extraJumps = extraJumpCount;
-			m_dashTime = startDashTime;
-			m_dashCooldown = dashCooldown;
+			// m_dashTime = startDashTime;
+			// m_dashCooldown = dashCooldown;
 			m_extraJumpForce = jumpForce * 0.7f;
 
 			m_rb = GetComponent<Rigidbody2D>();
@@ -86,8 +86,8 @@ namespace SupanthaPaul
 			// check if grounded
 			isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
 			var position = transform.position;
-			// check if on wall
 			
+			//! -- check if on wall
 /*
 			m_onWall = Physics2D.OverlapCircle((Vector2)position + grabRightOffset, grabCheckRadius, whatIsGround)
 			          || Physics2D.OverlapCircle((Vector2)position + grabLeftOffset, grabCheckRadius, whatIsGround);
@@ -104,7 +104,7 @@ namespace SupanthaPaul
 			// if this instance is currently playable
 			if (isCurrentlyPlayable)
 			{
-				// horizontal movement
+				//! -- horizontal movement
 /* 
 				if(m_wallJumping)
 				{
@@ -118,7 +118,9 @@ namespace SupanthaPaul
 						m_rb.velocity = new Vector2(0f, m_rb.velocity.y);
 				} 
 */
+				//* ++ Avancer en continue
 				m_rb.velocity = new Vector2(speed, m_rb.velocity.y);
+				
 				// better jump physics
 				if (m_rb.velocity.y < 0f)
 				{
@@ -126,13 +128,15 @@ namespace SupanthaPaul
 				}
 
 
-				// Flipping
+				//! -- Flipping
+/*
 				if (!m_facingRight && moveInput > 0f)
 					Flip();
 				else if (m_facingRight && moveInput < 0f)
 					Flip();
+*/
 
-				// Dashing logic
+				//! -- Dashing logic
 /* 
 				if (isDashing)
 				{
@@ -154,7 +158,7 @@ namespace SupanthaPaul
 				} 
 */
 
-				// wall grab
+				//! -- wall grab
 /* 
 				if(m_onWall && !isGrounded && m_rb.velocity.y <= 0f && m_playerSide == m_onWallSide)
 				{
@@ -171,8 +175,9 @@ namespace SupanthaPaul
 				}
 				if (m_wallGrabbing && isGrounded)
 					m_wallGrabbing = false;
-
-				// enable/disable dust particles
+*/
+				//! -- enable/disable dust particles
+/*
 				float playerVelocityMag = m_rb.velocity.sqrMagnitude;
 				if(m_dustParticle.isPlaying && playerVelocityMag == 0f)
 				{
@@ -204,14 +209,15 @@ namespace SupanthaPaul
 
 			if (!isCurrentlyPlayable) return;
 			// if not currently dashing and hasn't already dashed in air once
-			if (!isDashing && !m_hasDashedInAir && m_dashCooldown <= 0f)
+			// if (!isDashing && !m_hasDashedInAir && m_dashCooldown <= 0f)
+			if (m_dashCooldown <= 0f)
 			{
 				// dash input (left shift)
 				if (InputSystem.Dash())
 				{
-					isDashing = true;
+					// isDashing = true;
 					// dash effect
-					PoolManager.instance.ReuseObject(dashEffect, transform.position, Quaternion.identity);
+					// PoolManager.instance.ReuseObject(dashEffect, transform.position, Quaternion.identity);
 					// if player in air while dashing
 					if(!isGrounded)
 					{
