@@ -1,4 +1,4 @@
-# Motion Game
+# Polar Dash - Motion Game
 
 
 ## Instructions 
