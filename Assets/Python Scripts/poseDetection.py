@@ -51,8 +51,17 @@ class PoseDetection:
     print_active = True
     nose_y_points = [] # Use for avg value of nose
     lmList = None
+    here = False
+    old_here = False
     jump = False
+    old_jump = False
     squat = False
+    old_squat = False
+
+    def refreshOldValue(self):
+        self.old_here = self.here
+        self.old_jump = self.jump
+        self.old_squat = self.squat
 
     def calcul_distance(self, point1, point2):
         return math.sqrt((point1[1] - point2[1])**2 + (point1[2] - point2[2])**2)
@@ -72,10 +81,12 @@ class PoseDetection:
         # Try = test d'erreur 
         try:
             length = lmList[19][2]
+            self.here = True
         except Exception as e:
             length = 0
             if self.print_active:
                 print(e)
+            self.here = False
         self.lmList = lmList
 
     def pointPosition(self, point):

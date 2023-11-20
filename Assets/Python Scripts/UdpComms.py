@@ -48,6 +48,7 @@ class UdpComms():
     def SendData(self, strToSend):
         # Use this function to send string to C#
         self.udpSock.sendto(bytes(strToSend,'utf-8'), (self.udpIP, self.udpSendPort))
+        print(strToSend)
 
     def ReceiveData(self):
         """
