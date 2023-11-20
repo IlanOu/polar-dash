@@ -35,6 +35,8 @@ public class UdpSocket : MonoBehaviour
 
     PlayerMovement player;
 
+    public static string textRecieved;
+
     // PythonTest pythonTest;
 
 
@@ -97,9 +99,10 @@ public class UdpSocket : MonoBehaviour
                 IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
                 byte[] data = client.Receive(ref anyIP);
                 string text = Encoding.UTF8.GetString(data);
-                player.Update_Speed(text);
+                // player.Update_Speed(text);
                 // print(text);
-                ProcessInput(text);
+                textRecieved = text;
+                // ProcessInput(text);
             }
             catch (Exception err)
             {
@@ -107,6 +110,7 @@ public class UdpSocket : MonoBehaviour
             }
         }
     }
+
 
     private void ProcessInput(string input)
     {
