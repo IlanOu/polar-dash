@@ -7,10 +7,11 @@ public class Generation : MonoBehaviour
 {
     public List<GameObject> Maps = new List<GameObject>();
     private List<GameObject> InstantiatedMapsList = new List<GameObject>();
-    public string layerName = "Ground";
+    public string groundLayerName = "Ground";
 
     public Transform player; // Assign the player's transform in the inspector
     public float chunkTriggerDistance = 10f; // Distance at which a new chunk should be generated
+    public float chunkGroundTriggerDistance = 3f; // Distance at which a new chunk should be generated
 
     float offsetX = 0;
     int currentIndex = 0;
@@ -20,19 +21,19 @@ public class Generation : MonoBehaviour
     void Update()
     {
         // Calculate the distance between the player and the last instantiated chunk
-        float distanceToLastChunk = Mathf.Abs(player.position.x - (offsetX - GetWidthInPixels(Maps[currentIndex].transform) / 2));
+        float distanceToLastGroundChunk = Mathf.Abs(player.position.x - (offsetX - GetWidthInPixels(Maps[currentIndex].transform, groundLayerName) / 2));
 
         // Generate a new chunk if the player is close enough to the last one
-        if (distanceToLastChunk < chunkTriggerDistance)
+        if (distanceToLastGroundChunk < chunkGroundTriggerDistance)
         {
-            GenerateMap();
+            GenerateMapGround();
         }
     }
 
-    void GenerateMap()
+    void GenerateMapGround()
     {
         var mapPrefab = Maps[currentIndex];
-        float mapWidth = GetWidthInPixels(mapPrefab.transform);
+        float mapWidth = GetWidthInPixels(mapPrefab.transform, groundLayerName);
         GameObject instantiatedMap = Instantiate(mapPrefab, new Vector3((mapWidth / 2) + offsetX, 0, 0), Quaternion.identity);
         InstantiatedMapsList.Add(instantiatedMap);
         offsetX += mapWidth;
@@ -51,14 +52,14 @@ public class Generation : MonoBehaviour
     /// <summary>
     /// Permet d'obtenir la largeur d'une map
     /// </summary>
-    public float GetWidthInPixels(Transform parentTransform)
+    public float GetWidthInPixels(Transform parentTransform, string layerName)
     {
         float leftmostPoint = float.MaxValue;
         float rightmostPoint = float.MinValue;
 
         foreach (Transform child in parentTransform)
         {
-            if (child.gameObject.layer == LayerMask.NameToLayer(layerName))
+            if (child.gameObject.layer == LayerMask.NameToLayer(groundLayerName))
             {
                 // Ensure the child has a SpriteRenderer attached
                 SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
