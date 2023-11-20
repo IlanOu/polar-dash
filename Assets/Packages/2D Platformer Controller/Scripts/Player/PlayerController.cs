@@ -43,8 +43,9 @@ namespace SupanthaPaul
 
 		float originalSizeX;
 		float originalSizeY;
+		float originalOffsetY;
 
-		BoxCollider2D boxCollider;
+		private BoxCollider2D boxCollider;
 
 		void Start()
 		{
@@ -64,17 +65,10 @@ namespace SupanthaPaul
 
 			playerAnimator = GetComponent<PlayerAnimator>();
 
+			boxCollider = GetComponent<BoxCollider2D>() as BoxCollider2D;
 			originalSizeX = boxCollider.size.x;
 			originalSizeY = boxCollider.size.y;
-
-			boxCollider = GetComponent<BoxCollider2D>() as BoxCollider2D;
-/* 
-			playerAnimator = GetComponent<playerAnimator>();
-			if (playerAnimator == null)
-			{
-				Debug.LogError("Le script playerAnimator n'est pas attaché au même GameObject que PlayerController.");
-			} 
-*/
+			originalOffsetY = boxCollider.offset.y;
 		}
 
 		private void FixedUpdate()
@@ -153,11 +147,12 @@ namespace SupanthaPaul
 			{
 				// Réduire la taille du BoxCollider pendant la glissade
 				boxCollider.size = new Vector2(boxCollider.size.x, originalSizeY / 2f);
-				
-				float slideAnimationDuration = playerAnimator.GetSlideAnimationDuration("Slide"); // Remplacez "YourSlideAnimationName" par le nom de votre animation
+
+				// Ajuster l'origine pour que la boîte de collision diminue du haut vers le bas
+				boxCollider.offset = new Vector2(boxCollider.offset.x, originalOffsetY - originalSizeY / 4f);
 
 				// Lancer la coroutine pour réinitialiser la taille du collider après un certain délai
-				StartCoroutine(ResetColliderSize(slideAnimationDuration));
+				StartCoroutine(ResetColliderSize(1f));
 			}
 		}
 
@@ -167,8 +162,10 @@ namespace SupanthaPaul
 			yield return new WaitForSeconds(delay);
 
 			// Remettre la taille du BoxCollider à la normale
-			// float originalSizeY = // votre taille originale du BoxCollider en Y ici;
-			boxCollider.size = new Vector2(boxCollider.size.x, originalSizeY);
+			boxCollider.size = new Vector2(originalSizeX, originalSizeY);
+
+			// Remettre l'origine à sa position d'origine
+			boxCollider.offset = new Vector2(boxCollider.offset.x, originalOffsetY);
 
 			// Réactiver la possibilité de glisser
 			isSliding = false;
