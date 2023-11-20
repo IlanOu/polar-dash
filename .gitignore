@@ -85,4 +85,6 @@ node_modules
 .DS_Store
 
 # Python Script
-./[Aa]ssets/Python Scripts/__pycache__
+/[Aa]ssets/Python Scripts/__pycache__
+*.meta
+*.pyc
