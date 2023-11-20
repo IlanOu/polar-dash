@@ -70,7 +70,6 @@ counterLimit = 10000
 time_to_move = False
 start_time = time.time()
 
-
 while True:
     counter += 1
     if counter % 2 ==  0:
@@ -95,7 +94,7 @@ while True:
 
         right_img = right_detector.findPose(right_img, gv.SHOW_BONES)
         right_lmList = right_detector.getPosition(right_img, False)
-        left_poseDetection.print_active = True
+        right_poseDetection.print_active = False
         right_poseDetection.refreshPose(right_lmList) 
         
 
@@ -140,22 +139,41 @@ while True:
 
         # region Affichage des résultats
 
-
         print_squat = True
         if print_squat:
             msg = "SQUAT"
             if left_poseDetection.squat:
+                if not left_poseDetection.old_squat:
+                    sock.SendData("left:squat")
                 cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
             if right_poseDetection.squat:
+                if not right_poseDetection.old_squat:
+                    sock.SendData("right:squat")
                 cv2.putText(right_img, msg, (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
 
         print_saut = True
         if print_saut:
             msg = "SAUTE"
             if left_poseDetection.jump:
+                if not left_poseDetection.old_jump:
+                    sock.SendData("left:jump")
                 cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.GREEN, 2)
             if right_poseDetection.jump:
+                if not right_poseDetection.old_jump:
+                    sock.SendData("right:jump")
                 cv2.putText(right_img, msg, (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.GREEN, 2)
+
+        if left_poseDetection.here and not left_poseDetection.old_here:
+            sock.SendData("left:here")
+        elif not left_poseDetection.here and left_poseDetection.old_here:
+            sock.SendData("left:nothere")
+        if right_poseDetection.here and not right_poseDetection.old_here:
+            sock.SendData("right:here")
+        elif not right_poseDetection.here and right_poseDetection.old_here:
+            sock.SendData("right:nothere")
+
+        left_poseDetection.refreshOldValue()
+        right_poseDetection.refreshOldValue()
 
         if not time_to_move:
             msg = "ATTENDEZ LORS DE L'ANALYSE"
