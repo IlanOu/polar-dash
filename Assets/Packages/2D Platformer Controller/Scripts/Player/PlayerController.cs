@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Net.Sockets;
+using UnityEngine;
 
 namespace SupanthaPaul
 {
@@ -46,20 +47,6 @@ namespace SupanthaPaul
 		private float m_groundedRemember = 0f;
 		private int m_extraJumps;
 		private float m_extraJumpForce;
-		private float m_dashTime;
-		private bool m_hasDashedInAir = false;
-		private bool m_onWall = false;
-		private bool m_onRightWall = false;
-		private bool m_onLeftWall = false;
-		private bool m_wallGrabbing = false;
-		private readonly float m_wallStickTime = 0.25f;
-		private float m_wallStick = 0f;
-		private bool m_wallJumping = false;
-		private float m_dashCooldown;
-
-		// 0 -> none, 1 -> right, -1 -> left
-		private int m_onWallSide = 0;
-		private int m_playerSide = 1;
 
 
 		void Start()
@@ -73,12 +60,11 @@ namespace SupanthaPaul
 				isCurrentlyPlayable = true;
 
 			m_extraJumps = extraJumpCount;
-			// m_dashTime = startDashTime;
-			// m_dashCooldown = dashCooldown;
 			m_extraJumpForce = jumpForce * 0.7f;
 
 			m_rb = GetComponent<Rigidbody2D>();
 			m_dustParticle = GetComponentInChildren<ParticleSystem>();
+
 		}
 
 		private void FixedUpdate()
@@ -87,37 +73,9 @@ namespace SupanthaPaul
 			isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
 			var position = transform.position;
 			
-			//! -- check if on wall
-/*
-			m_onWall = Physics2D.OverlapCircle((Vector2)position + grabRightOffset, grabCheckRadius, whatIsGround)
-			          || Physics2D.OverlapCircle((Vector2)position + grabLeftOffset, grabCheckRadius, whatIsGround);
-			m_onRightWall = Physics2D.OverlapCircle((Vector2)position + grabRightOffset, grabCheckRadius, whatIsGround);
-			m_onLeftWall = Physics2D.OverlapCircle((Vector2)position + grabLeftOffset, grabCheckRadius, whatIsGround);
- */
-			// calculate player and wall sides as integers
-			CalculateSides();
-
-			if((m_wallGrabbing || isGrounded) && m_wallJumping)
-			{
-				m_wallJumping = false;
-			}
 			// if this instance is currently playable
 			if (isCurrentlyPlayable)
 			{
-				//! -- horizontal movement
-/* 
-				if(m_wallJumping)
-				{
-					m_rb.velocity = Vector2.Lerp(m_rb.velocity, (new Vector2(moveInput * speed, m_rb.velocity.y)), 1.5f * Time.fixedDeltaTime);
-				}
-				else
-				{
-					if(canMove && !m_wallGrabbing)
-						m_rb.velocity = new Vector2(moveInput * speed, m_rb.velocity.y);
-					else if(!canMove)
-						m_rb.velocity = new Vector2(0f, m_rb.velocity.y);
-				} 
-*/
 				//* ++ Avancer en continue
 				m_rb.velocity = new Vector2(speed, m_rb.velocity.y);
 				
@@ -126,68 +84,6 @@ namespace SupanthaPaul
 				{
 					m_rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
 				}
-
-
-				//! -- Flipping
-/*
-				if (!m_facingRight && moveInput > 0f)
-					Flip();
-				else if (m_facingRight && moveInput < 0f)
-					Flip();
-*/
-
-				//! -- Dashing logic
-/* 
-				if (isDashing)
-				{
-					if (m_dashTime <= 0f)
-					{
-						isDashing = false;
-						m_dashCooldown = dashCooldown;
-						m_dashTime = startDashTime;
-						m_rb.velocity = Vector2.zero;
-					}
-					else
-					{
-						m_dashTime -= Time.deltaTime;
-						if(m_facingRight)
-							m_rb.velocity = Vector2.right * dashSpeed;
-						else
-							m_rb.velocity = Vector2.left * dashSpeed;
-					}
-				} 
-*/
-
-				//! -- wall grab
-/* 
-				if(m_onWall && !isGrounded && m_rb.velocity.y <= 0f && m_playerSide == m_onWallSide)
-				{
-					actuallyWallGrabbing = true;    // for animation
-					m_wallGrabbing = true;
-					m_rb.velocity = new Vector2(moveInput * speed, -slideSpeed);
-					m_wallStick = m_wallStickTime;
-				} else
-				{
-					m_wallStick -= Time.deltaTime;
-					actuallyWallGrabbing = false;
-					if (m_wallStick <= 0f)
-						m_wallGrabbing = false;
-				}
-				if (m_wallGrabbing && isGrounded)
-					m_wallGrabbing = false;
-*/
-				//! -- enable/disable dust particles
-/*
-				float playerVelocityMag = m_rb.velocity.sqrMagnitude;
-				if(m_dustParticle.isPlaying && playerVelocityMag == 0f)
-				{
-					m_dustParticle.Stop();
-				}
-				else if(!m_dustParticle.isPlaying && playerVelocityMag > 0f)
-				{
-					m_dustParticle.Play();
-				} 
-*/
 
 			}
 		}
@@ -208,37 +104,17 @@ namespace SupanthaPaul
 				m_groundedRemember = m_groundedRememberTime;
 
 			if (!isCurrentlyPlayable) return;
-			// if not currently dashing and hasn't already dashed in air once
-			// if (!isDashing && !m_hasDashedInAir && m_dashCooldown <= 0f)
-			if (m_dashCooldown <= 0f)
-			{
-				// dash input (left shift)
-				if (InputSystem.Dash())
-				{
-					// isDashing = true;
-					// dash effect
-					// PoolManager.instance.ReuseObject(dashEffect, transform.position, Quaternion.identity);
-					// if player in air while dashing
-					if(!isGrounded)
-					{
-						m_hasDashedInAir = true;
-					}
-					// dash logic is in FixedUpdate
-				}
-			}
-			m_dashCooldown -= Time.deltaTime;
-			
-			// if has dashed in air once but now grounded
-			if (m_hasDashedInAir && isGrounded)
-				m_hasDashedInAir = false;
-			
+
 			// Jumping
-			if(InputSystem.Jump() && m_extraJumps > 0 && !isGrounded && !m_wallGrabbing)	// extra jumping
+			if(InputSystem.Jump() && m_extraJumps > 0 && !isGrounded)	// extra jumping
 			{
 				m_rb.velocity = new Vector2(m_rb.velocity.x, m_extraJumpForce); ;
 				m_extraJumps--;
 				// jumpEffect
 				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
+				
+				// ! Socket get 
+				Debug.Log(UdpSocket.textRecieved);
 			}
 			else if(InputSystem.Jump() && (isGrounded || m_groundedRemember > 0f))	// normal single jumping
 			{
@@ -246,50 +122,8 @@ namespace SupanthaPaul
 				// jumpEffect
 				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
 			}
-			else if(InputSystem.Jump() && m_wallGrabbing && moveInput!=m_onWallSide )		// wall jumping off the wall
-			{
-				m_wallGrabbing = false;
-				m_wallJumping = true;
-				Debug.Log("Wall jumped");
-				if (m_playerSide == m_onWallSide)
-					Flip();
-				m_rb.AddForce(new Vector2(-m_onWallSide * wallJumpForce.x, wallJumpForce.y), ForceMode2D.Impulse);
-			}
-			else if(InputSystem.Jump() && m_wallGrabbing && moveInput != 0 && (moveInput == m_onWallSide))      // wall climbing jump
-			{
-				m_wallGrabbing = false;
-				m_wallJumping = true;
-				Debug.Log("Wall climbed");
-				if (m_playerSide == m_onWallSide)
-					Flip();
-				m_rb.AddForce(new Vector2(-m_onWallSide * wallClimbForce.x, wallClimbForce.y), ForceMode2D.Impulse);
-			}
 
 		}
-
-		void Flip()
-		{
-			m_facingRight = !m_facingRight;
-			Vector3 scale = transform.localScale;
-			scale.x *= -1;
-			transform.localScale = scale;
-		}
-
-		void CalculateSides()
-		{
-			if (m_onRightWall)
-				m_onWallSide = 1;
-			else if (m_onLeftWall)
-				m_onWallSide = -1;
-			else
-				m_onWallSide = 0;
-
-			if (m_facingRight)
-				m_playerSide = 1;
-			else
-				m_playerSide = -1;
-		}
-
 		private void OnDrawGizmosSelected()
 		{
 			Gizmos.color = Color.red;
