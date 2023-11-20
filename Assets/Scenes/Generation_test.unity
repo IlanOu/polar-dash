@@ -244,6 +244,9 @@ MonoBehaviour:
   - {fileID: 595508801}
   - {fileID: 2010410204}
   layerName: Ground
+  player: {fileID: 138378544}
+  chunkTriggerDistance: 10
+  maxMapNumber: 10
 --- !u!1 &525622580
 GameObject:
   m_ObjectHideFlags: 0
