@@ -12,6 +12,7 @@ namespace SupanthaPaul
 		private static readonly int IsJumping = Animator.StringToHash("IsJumping");
 		private static readonly int WallGrabbing = Animator.StringToHash("WallGrabbing");
 		private static readonly int IsDashing = Animator.StringToHash("IsDashing");
+		private static readonly int IsSliding = Animator.StringToHash("IsSliding");
 
 		private void Start()
 		{
@@ -30,7 +31,8 @@ namespace SupanthaPaul
 			m_anim.SetFloat(JumpState, verticalVelocity);
 
 			// Jump animation
-			if (!m_controller.isGrounded && !m_controller.actuallyWallGrabbing)
+
+			if (!m_controller.isGrounded)
 			{
 				m_anim.SetBool(IsJumping, true);
 			}
@@ -38,17 +40,35 @@ namespace SupanthaPaul
 			{
 				m_anim.SetBool(IsJumping, false);
 			}
+			
+			Debug.Log(m_controller.isSliding);
+			m_anim.SetBool(IsSliding, m_controller.isSliding);
+			// if (m_controller.isSliding){
+			// }else{
+			// 	m_anim.SetBool(IsSliding, true);
+			// }
 
-			if(!m_controller.isGrounded && m_controller.actuallyWallGrabbing)
-			{
-				m_anim.SetBool(WallGrabbing, true);
-			} else
-			{
-				m_anim.SetBool(WallGrabbing, false);
-			}
 
 			// dash animation
 			// m_anim.SetBool(IsDashing, m_controller.isDashing);
+		}
+
+		public float GetSlideAnimationDuration(string animationName)
+		{
+			// Récupérer l'état de l'animation par son nom
+			AnimatorStateInfo state = m_anim.GetCurrentAnimatorStateInfo(0);
+
+			// Vérifier si l'animation spécifiée est en cours
+			if (state.IsName(animationName))
+			{
+				// Retourner la durée totale de l'animation
+				return state.length;
+			}
+			else
+			{
+				// Retourner une valeur par défaut si l'animation n'est pas en cours
+				return 0f;
+			}
 		}
 	}
 }
