@@ -83,3 +83,6 @@ crashlytics-build.properties
 # Ignore node modules
 node_modules
 .DS_Store
+
+# Python Script
+./[Aa]ssets/Python Scripts/__pycache__
