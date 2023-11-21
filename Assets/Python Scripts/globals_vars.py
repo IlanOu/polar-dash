@@ -1,3 +1,7 @@
+## SAVING IMAGE
+STREAMING_ASSETS_PATH = "../StreamingAssets"
+MAX_IMAGE = 3
+
 ## CV2
 WIDTH = 960
 HEIGHT = 540

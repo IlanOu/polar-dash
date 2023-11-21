@@ -4,8 +4,8 @@ import time
 import UdpComms as U
 from poseDetection import PoseDetection as pd
 import globals_vars as gv
+import saveImage as si
 import PoseModule
-import os
 
 # Create UDP socket to use for sending (and receiving)
 sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
@@ -78,6 +78,8 @@ time_to_move = False
 start_time = time.time()
 left_femurSizes = []
 right_femurSizes = []
+getImage = False
+photo = None
 
 while True:
     counter += 1
@@ -89,6 +91,12 @@ while True:
         # region Image
         img = cv2.resize(img, screenSize)
         img = cv2.flip(img,1)
+
+        if getImage:
+            boolTest = False
+            getImage = False
+            photo = img
+            si.compress_and_save_image(photo)
 
         cv2.line(img, (gv.SCREEN_SEPARATOR, 0), (gv.SCREEN_SEPARATOR, gv.HEIGHT), gv.BLACK, 2)
 
