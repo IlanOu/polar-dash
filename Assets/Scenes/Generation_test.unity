@@ -441,18 +441,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: _GameManager
       objectReference: {fileID: 0}
+    - target: {fileID: 950155263170521835, guid: c178d0cd48290754090db39688a14bc9,
+        type: 3}
+      propertyPath: textScore
+      value: 
+      objectReference: {fileID: 1470612731}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 188086466629136935, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 640205570}
-    - targetCorrespondingSourceObject: {fileID: 188086466629136935, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 640205571}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c178d0cd48290754090db39688a14bc9, type: 3}
 --- !u!1 &595508801
 GameObject:
@@ -486,41 +483,6 @@ Transform:
   - {fileID: 2082136653}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &640205569 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 188086466629136935, guid: c178d0cd48290754090db39688a14bc9,
-    type: 3}
-  m_PrefabInstance: {fileID: 562325788}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &640205570
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 640205569}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1888a80e2dc77b9459a4c7ecfc13edeb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  score: 0
-  isCurrent: 0
-  textScore: {fileID: 1470612731}
---- !u!114 &640205571
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 640205569}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 646477868097303478ec4ee319bbdd13, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scoreBeforeChangeLevel: 10
-  currentLevel: 1
 --- !u!1 &664759085
 GameObject:
   m_ObjectHideFlags: 0
