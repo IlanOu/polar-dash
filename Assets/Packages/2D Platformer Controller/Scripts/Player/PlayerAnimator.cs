@@ -41,7 +41,7 @@ namespace SupanthaPaul
 				m_anim.SetBool(IsJumping, false);
 			}
 			
-			Debug.Log(m_controller.isSliding);
+			// Debug.Log(m_controller.isSliding);
 			m_anim.SetBool(IsSliding, m_controller.isSliding);
 			// if (m_controller.isSliding){
 			// }else{

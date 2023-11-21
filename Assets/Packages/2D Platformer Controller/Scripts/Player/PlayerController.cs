@@ -94,7 +94,7 @@ namespace SupanthaPaul
 		private void Update()
 		{
 			// ! Socket get 
-			Debug.Log(UdpSocket.textRecieved);
+			// Debug.Log(UdpSocket.textRecieved);
 			InputSystem.Jump();
 			
 			isJumping = false;
@@ -109,7 +109,7 @@ namespace SupanthaPaul
 			}
 			//~ Temporary variables for debugging : Jump
 			//~ ----------------------------------------
-			isJumping = InputSystem.Jump();
+			// isJumping = InputSystem.Jump();
 			//~ ----------------------------------------
 
 			if (isGrounded)

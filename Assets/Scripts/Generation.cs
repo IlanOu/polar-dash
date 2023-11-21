@@ -59,7 +59,7 @@ public class Generation : MonoBehaviour
 
         foreach (Transform child in parentTransform)
         {
-            if (child.gameObject.layer == LayerMask.NameToLayer(groundLayerName))
+            if (child.gameObject.layer == LayerMask.NameToLayer(layerName))
             {
                 // Ensure the child has a SpriteRenderer attached
                 SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
@@ -81,6 +81,8 @@ public class Generation : MonoBehaviour
                 {
                     Debug.LogError("Some children do not have a SpriteRenderer.");
                 }
+            }else {
+                Debug.LogError("Le nom du layer est incorect, aucun objet n'a été trouvé avec le nom : " + layerName);
             }
         }
 
