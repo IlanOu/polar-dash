@@ -102,6 +102,8 @@ public class UdpSocket : MonoBehaviour
                 // player.Update_Speed(text);
                 // print(text);
                 textRecieved = text;
+
+                DataTreat.instance.TreatTextReceived(textRecieved);
                 // ProcessInput(text);
             }
             catch (Exception err)

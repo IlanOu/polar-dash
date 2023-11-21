@@ -48,6 +48,8 @@ namespace SupanthaPaul
 		private int m_extraJumps;
 		private float m_extraJumpForce;
 
+		private string actionToPerform;
+
 
 		void Start()
 		{
@@ -90,6 +92,7 @@ namespace SupanthaPaul
 
 		private void Update()
 		{
+			CheckMovement();
 			// horizontal input
 			moveInput = InputSystem.HorizontalRaw();
 
@@ -116,8 +119,9 @@ namespace SupanthaPaul
 				// ! Socket get 
 				Debug.Log(UdpSocket.textRecieved);
 			}
-			else if(InputSystem.Jump() && (isGrounded || m_groundedRemember > 0f))	// normal single jumping
+			else if(actionToPerform == "jump" && (isGrounded || m_groundedRemember > 0f))	// normal single jumping
 			{
+				actionToPerform = "";
 				m_rb.velocity = new Vector2(m_rb.velocity.x, jumpForce);
 				// jumpEffect
 				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
@@ -130,6 +134,22 @@ namespace SupanthaPaul
 			Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
 			Gizmos.DrawWireSphere((Vector2)transform.position + grabRightOffset, grabCheckRadius);
 			Gizmos.DrawWireSphere((Vector2)transform.position + grabLeftOffset, grabCheckRadius);
+		}
+
+		void CheckMovement()
+		{
+			string playerSide = DataTreat.instance.playerSide;
+			string movementPerformed = DataTreat.instance.movementPerformed;
+			if(playerSide == "left" && movementPerformed == LevelManager.instance.leftMovement)
+			{
+				actionToPerform = LevelManager.instance.leftAction;
+			}
+			if(playerSide == "right" && movementPerformed == LevelManager.instance.rightMovement)
+			{
+				actionToPerform = LevelManager.instance.rightAction;
+			}
+			DataTreat.instance.playerSide = "";
+			DataTreat.instance.movementPerformed = "";
 		}
 	}
 }

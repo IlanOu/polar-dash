@@ -78,6 +78,7 @@ time_to_move = False
 start_time = time.time()
 left_femurSizes = []
 right_femurSizes = []
+test = True
 getImage = False
 photo = None
 
@@ -93,7 +94,6 @@ while True:
         img = cv2.flip(img,1)
 
         if getImage:
-            boolTest = False
             getImage = False
             photo = img
             si.compress_and_save_image(photo)
@@ -175,7 +175,7 @@ while True:
 
         # region Résultats
 
-        print_squat = False
+        print_squat = True
         if print_squat:
             msg = "SQUAT"
             if left_poseDetection.squat:
@@ -187,7 +187,7 @@ while True:
                     sock.SendData("right:squat")
                 cv2.putText(right_img, msg, (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
 
-        print_saut = False
+        print_saut = True
         if print_saut:
             msg = "SAUTE"
             if left_poseDetection.jump:
@@ -204,6 +204,7 @@ while True:
             msg = "TOP"
             if left_poseDetection.arms_top:
                 if not left_poseDetection.old_arms_top:
+                    # getImage = True
                     sock.SendData("left:top")
                 cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), int(gv.HEIGHT/2) + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
             if right_poseDetection.arms_top:
