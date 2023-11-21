@@ -5,6 +5,7 @@ import UdpComms as U
 from poseDetection import PoseDetection as pd
 import globals_vars as gv
 import PoseModule
+import os
 
 # Create UDP socket to use for sending (and receiving)
 sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
@@ -51,8 +52,12 @@ def auto_config(left_femurSizes, right_femurSizes):
     try:
         gv.LEFT_SQUAT_RANGE = mean(left_femurSizes) / gv.COEF_SQUAT_RANGE
         gv.LEFT_JUMP_RANGE = mean(left_femurSizes) / gv.COEF_JUMP_RANGE
+        
+        gv.RIGHT_SQUAT_RANGE = mean(right_femurSizes) / gv.COEF_SQUAT_RANGE
+        gv.RIGHT_JUMP_RANGE = mean(right_femurSizes) / gv.COEF_JUMP_RANGE
     except Exception as e:
         print("Erreur analyse")
+        #print(e)
 
 
 cap = cv2.VideoCapture(0)
@@ -62,13 +67,17 @@ left_detector = PoseModule.poseDetector()
 right_detector = PoseModule.poseDetector()
 
 left_poseDetection = pd()
+left_poseDetection.setSide("LEFT")
 right_poseDetection = pd()
+right_poseDetection.setSide("RIGHT")
 
 # & Variables
 counter = 0
 counterLimit = 10000
 time_to_move = False
 start_time = time.time()
+left_femurSizes = []
+right_femurSizes = []
 
 while True:
     counter += 1
@@ -77,6 +86,7 @@ while True:
         if not success:
             break
         
+        # region Image
         img = cv2.resize(img, screenSize)
         img = cv2.flip(img,1)
 
@@ -85,6 +95,10 @@ while True:
         # Screen separation
         left_img = img[:, :gv.SCREEN_SEPARATOR]
         right_img = img[:, gv.SCREEN_SEPARATOR:]
+
+        # endregion Image
+
+        # region Get Pose
 
         # Get new position
         left_img = left_detector.findPose(left_img, gv.SHOW_BONES)
@@ -97,14 +111,11 @@ while True:
         right_poseDetection.print_active = False
         right_poseDetection.refreshPose(right_lmList) 
         
+        # endregion Get Pose
 
-        
-
-        #& ----------------------------- MES FONCTIONS -----------------------------
+        # region Calcul
 
         # AUTO CONFIG
-        left_femurSizes = []
-        right_femurSizes = []
         if not time_to_move:
             # Adjust range
             left_femurSizes.append(left_poseDetection.auto_config())
@@ -126,20 +137,37 @@ while True:
             left_poseDetection.isSquat(gv.LEFT_SQUAT_RANGE)
             right_poseDetection.isSquat(gv.RIGHT_SQUAT_RANGE)
 
+            # ARMS POS
+            left_center = left_poseDetection.resetArea()
+            right_center = right_poseDetection.resetArea()
 
-        # OLD DEFINE MOVEMENT
-        # movementType = pd.getMovementType(handPosRight, handPosLeft)
+            if left_center:
+                cv2.circle(left_img, left_center, 10, gv.GREEN, 2)
+            if right_center:
+                cv2.circle(right_img, right_center, 10, gv.GREEN, 2)
 
-                        
-        #& --------------------------- PAS MES FONCTIONS ----------------------------
+            left_poseDetection.arms_detection()
+            right_poseDetection.arms_detection()
 
-        # sock.SendData(movementType) # Send this string to other application
-        # if movementType:
-        #     cv2.putText(img, f"Type de mouvement : {movementType}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        # endregion Calcul
 
-        # region Affichage des résultats
+        # region Affichage Debug
 
-        print_squat = True
+        # printRect(left_img, gv.TOP_AREA[0][0], gv.TOP_AREA[0][1])
+        # printRect(left_img, gv.BOTTOM_AREA[0][0], gv.BOTTOM_AREA[0][1])
+        # printRect(left_img, gv.LEFT_AREA[0][0], gv.LEFT_AREA[0][1])
+        # printRect(left_img, gv.RIGHT_AREA[0][0], gv.RIGHT_AREA[0][1])
+
+        # printRect(right_img, gv.TOP_AREA[1][0], gv.TOP_AREA[1][1])
+        # printRect(right_img, gv.BOTTOM_AREA[1][0], gv.BOTTOM_AREA[1][1])
+        # printRect(right_img, gv.LEFT_AREA[1][0], gv.LEFT_AREA[1][1])
+        # printRect(right_img, gv.RIGHT_AREA[1][0], gv.RIGHT_AREA[1][1])
+
+        # endregion Affichage Debug
+
+        # region Résultats
+
+        print_squat = False
         if print_squat:
             msg = "SQUAT"
             if left_poseDetection.squat:
@@ -151,7 +179,7 @@ while True:
                     sock.SendData("right:squat")
                 cv2.putText(right_img, msg, (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
 
-        print_saut = True
+        print_saut = False
         if print_saut:
             msg = "SAUTE"
             if left_poseDetection.jump:
@@ -162,6 +190,46 @@ while True:
                 if not right_poseDetection.old_jump:
                     sock.SendData("right:jump")
                 cv2.putText(right_img, msg, (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.GREEN, 2)
+
+        print_arms_pos = True
+        if print_arms_pos:
+            msg = "TOP"
+            if left_poseDetection.arms_top:
+                if not left_poseDetection.old_arms_top:
+                    sock.SendData("left:top")
+                cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), int(gv.HEIGHT/2) + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
+            if right_poseDetection.arms_top:
+                if not right_poseDetection.old_arms_top:
+                    sock.SendData("right:top")
+                cv2.putText(right_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), int(gv.HEIGHT/2) + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
+            msg = "BOTTOM"
+            if left_poseDetection.arms_bottom:
+                if not left_poseDetection.old_arms_bottom:
+                    sock.SendData("left:bottom")
+                cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), int(gv.HEIGHT/2) + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
+            if right_poseDetection.arms_bottom:
+                if not right_poseDetection.old_arms_bottom:
+                    sock.SendData("right:bottom")
+                cv2.putText(right_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), int(gv.HEIGHT/2) + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
+            msg = "LEFT"
+            if left_poseDetection.arms_left:
+                if not left_poseDetection.old_arms_left:
+                    sock.SendData("left:left")
+                cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), int(gv.HEIGHT/2) + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
+            if right_poseDetection.arms_left:
+                if not right_poseDetection.old_arms_left:
+                    sock.SendData("right:left")
+                cv2.putText(right_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), int(gv.HEIGHT/2) + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
+            msg = "RIGHT"
+            if left_poseDetection.arms_right:
+                if not left_poseDetection.old_arms_right:
+                    sock.SendData("left:right")
+                cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), int(gv.HEIGHT/2) + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
+            if right_poseDetection.arms_right:
+                if not right_poseDetection.old_arms_right:
+                    sock.SendData("right:right")
+                cv2.putText(right_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), int(gv.HEIGHT/2) + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
+
 
         if left_poseDetection.here and not left_poseDetection.old_here:
             sock.SendData("left:here")
@@ -179,7 +247,7 @@ while True:
             msg = "ATTENDEZ LORS DE L'ANALYSE"
             cv2.putText(img, msg, (int(gv.WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
 
-        # endregion Affichage des résultats
+        # endregion Résultats
 
         cv2.imshow("Webcam", img)
         cv2.waitKey(1)
