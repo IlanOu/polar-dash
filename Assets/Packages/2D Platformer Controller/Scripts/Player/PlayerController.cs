@@ -109,7 +109,7 @@ namespace SupanthaPaul
 			}
 			//~ Temporary variables for debugging : Jump
 			//~ ----------------------------------------
-			// isJumping = InputSystem.Jump();
+			isJumping = InputSystem.Jump();
 			//~ ----------------------------------------
 
 			if (isGrounded)

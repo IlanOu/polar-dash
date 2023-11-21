@@ -10,7 +10,7 @@ public class Generation : MonoBehaviour
     public string groundLayerName = "Ground";
 
     public Transform player; // Assign the player's transform in the inspector
-    public float chunkTriggerDistance = 10f; // Distance at which a new chunk should be generated
+    public float chunkTriggerDistance = 15f; // Distance at which a new chunk should be generated
     public float chunkGroundTriggerDistance = 3f; // Distance at which a new chunk should be generated
 
     float offsetX = 0;
