@@ -451,79 +451,10 @@ PrefabInstance:
       propertyPath: textAction
       value: 
       objectReference: {fileID: 1650975578}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: actionList.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: scoreBeforeChangeLevel
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: movementList.Array.size
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: actionList.Array.data[0]
-      value: jump
-      objectReference: {fileID: 0}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: actionList.Array.data[1]
-      value: slide
-      objectReference: {fileID: 0}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: movementList.Array.data[0]
-      value: jump
-      objectReference: {fileID: 0}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: movementList.Array.data[1]
-      value: squat
-      objectReference: {fileID: 0}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: movementList.Array.data[2]
-      value: top
-      objectReference: {fileID: 0}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: movementList.Array.data[3]
-      value: bottom
-      objectReference: {fileID: 0}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: movementList.Array.data[4]
-      value: left
-      objectReference: {fileID: 0}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: movementList.Array.data[5]
-      value: right
-      objectReference: {fileID: 0}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: deltaScoreBeforeChangeLevel
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 4320193998396825983, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      propertyPath: deltaLevelBeforeChangeAction
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 188086466629136935, guid: c178d0cd48290754090db39688a14bc9,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1140463874}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c178d0cd48290754090db39688a14bc9, type: 3}
 --- !u!1 &595508801
 GameObject:
@@ -866,26 +797,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1140463868 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 188086466629136935, guid: c178d0cd48290754090db39688a14bc9,
-    type: 3}
-  m_PrefabInstance: {fileID: 562325788}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1140463874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1140463868}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6f2701d6b8a1144c86f5fb292abbbbc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerSide: 
-  movementPerformed: 
 --- !u!1001 &1153298818
 PrefabInstance:
   m_ObjectHideFlags: 0
