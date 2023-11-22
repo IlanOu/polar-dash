@@ -18,6 +18,7 @@ public class Generation : MonoBehaviour
 
     public int maxMapNumber = 10;
 
+
     void Update()
     {
         // Calculate the distance between the player and the last instantiated chunk
@@ -34,7 +35,9 @@ public class Generation : MonoBehaviour
     {
         var mapPrefab = Maps[currentIndex];
         float mapWidth = GetWidthInPixels(mapPrefab.transform, groundLayerName);
-        GameObject instantiatedMap = Instantiate(mapPrefab, new Vector3((mapWidth / 2) + offsetX, 0, 0), Quaternion.identity);
+        GameObject instantiatedMap = Instantiate(mapPrefab, new Vector3((mapWidth / 2) + offsetX, 
+                                                                        ObjectsManager.groundHeight, 
+                                                                        0), Quaternion.identity);
         InstantiatedMapsList.Add(instantiatedMap);
         offsetX += mapWidth;
 
@@ -62,13 +65,15 @@ public class Generation : MonoBehaviour
             if (child.gameObject.layer == LayerMask.NameToLayer(layerName))
             {
                 // Ensure the child has a SpriteRenderer attached
-                SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
+                // SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
 
-                if (spriteRenderer != null)
+                if (ObjectsManager.spriteSize(child.gameObject) != Vector2.zero)
                 {
                     // Calculate the leftmost and rightmost points
                     float positionX = child.position.x;
-                    float halfWidth = spriteRenderer.bounds.size.x * 0.5f;
+                    
+                    float halfWidth = ObjectsManager.spriteSize(child.gameObject).x * 0.5f;
+                    
 
                     float left = positionX - halfWidth;
                     float right = positionX + halfWidth;
