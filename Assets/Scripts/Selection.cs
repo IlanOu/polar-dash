@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Selection : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class Selection : MonoBehaviour
             if(leftMovement == PlaySelection)
             {
                 // SCENE JEU
-                Debug.Log("JEU");
+                SceneManager.LoadScene("Generation_test");
             }
         }
     }
