@@ -39,6 +39,8 @@ namespace SupanthaPaul
 		private int m_extraJumps;
 		private float m_extraJumpForce;
 
+		private string actionToPerform;
+
 		private PlayerAnimator playerAnimator;
 
 		float originalSizeX;
@@ -93,24 +95,9 @@ namespace SupanthaPaul
 
 		private void Update()
 		{
-			// ! Socket get 
-			// Debug.Log(UdpSocket.textRecieved);
-			InputSystem.Jump();
-			
-			isJumping = false;
-			switch (UdpSocket.textRecieved)
-			{
-				case "left:jump":
-					isJumping = true;
-					break;
-				default:
-					isJumping = false;
-					break;
-			}
-			//~ Temporary variables for debugging : Jump
-			//~ ----------------------------------------
-			isJumping = InputSystem.Jump();
-			//~ ----------------------------------------
+			CheckMovement();
+			// horizontal input
+			// moveInput = InputSystem.HorizontalRaw();
 
 			if (isGrounded)
 			{
@@ -133,8 +120,9 @@ namespace SupanthaPaul
 				// jumpEffect
 				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
 			}
-			else if(isJumping && (isGrounded || m_groundedRemember > 0f))	// normal single jumping
+			else if(actionToPerform == "jump" && (isGrounded || m_groundedRemember > 0f))	// normal single jumping
 			{
+				actionToPerform = "";
 				m_rb.velocity = new Vector2(m_rb.velocity.x, jumpForce);
 				// jumpEffect
 				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
@@ -171,6 +159,20 @@ namespace SupanthaPaul
 			isSliding = false;
 		}
 
-		
+		void CheckMovement()
+		{
+			string playerSide = DataTreat.instance.playerSide;
+			string movementPerformed = DataTreat.instance.movementPerformed;
+			if(playerSide == "left" && movementPerformed == LevelManager.instance.leftMovement)
+			{
+				actionToPerform = LevelManager.instance.leftAction;
+			}
+			if(playerSide == "right" && movementPerformed == LevelManager.instance.rightMovement)
+			{
+				actionToPerform = LevelManager.instance.rightAction;
+			}
+			DataTreat.instance.playerSide = "";
+			DataTreat.instance.movementPerformed = "";
+		}
 	}
 }

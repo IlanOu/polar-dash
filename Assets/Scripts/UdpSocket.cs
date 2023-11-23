@@ -77,6 +77,9 @@ public class UdpSocket : MonoBehaviour
                 byte[] data = client.Receive(ref anyIP);
                 text = Encoding.UTF8.GetString(data);
                 textRecieved = text;
+
+                DataTreat.instance.TreatTextReceived(textRecieved);
+                // ProcessInput(text);
             }
             catch (Exception err)
             {
