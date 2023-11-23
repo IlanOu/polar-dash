@@ -22,8 +22,6 @@ using System.Threading;
 
 public class UdpSocket : MonoBehaviour
 {
-    [HideInInspector] public bool isTxStarted = false;
-
     [SerializeField] string IP = "127.0.0.1"; // local host
     [SerializeField] int rxPort = 8000; // port to receive data from Python on
     [SerializeField] int txPort = 8001; // port to send data to Python on
@@ -33,22 +31,8 @@ public class UdpSocket : MonoBehaviour
     IPEndPoint remoteEndPoint;
     Thread receiveThread; // Receiving Thread
 
-    PlayerMovement player;
-
     public static string textRecieved;
 
-    // PythonTest pythonTest;
-
-
-    //IEnumerator SendDataCoroutine() // DELETE THIS: Added to show sending data from Unity to Python via UDP
-    //{
-    //    while (true)
-    //    {
-    //        SendData("Sent from Unity: " + i.ToString());
-    //        i++;
-    //        yield return new WaitForSeconds(1f);
-    //    }
-    //}
 
     public void SendData(string message) // Use to send data to Python
     {
@@ -79,14 +63,6 @@ public class UdpSocket : MonoBehaviour
 
         // Initialize (seen in comments window)
         print("UDP Comms Initialised");
-
-        //StartCoroutine(SendDataCoroutine()); // DELETE THIS: Added to show sending data from Unity to Python via UDP
-    }
-
-    private void Start() 
-    {
-        player =  FindObjectOfType<PlayerMovement>();
-        // pythonTest = FindObjectOfType<PythonTest>(); // Instead of using a public variable
     }
 
     // Receive data, update packets received
@@ -94,13 +70,12 @@ public class UdpSocket : MonoBehaviour
     {
         while (true)
         {
+            string text = "";
             try
             {
                 IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
                 byte[] data = client.Receive(ref anyIP);
-                string text = Encoding.UTF8.GetString(data);
-                // player.Update_Speed(text);
-                // print(text);
+                text = Encoding.UTF8.GetString(data);
                 textRecieved = text;
 
                 DataTreat.instance.TreatTextReceived(textRecieved);
@@ -110,19 +85,6 @@ public class UdpSocket : MonoBehaviour
             {
                 print(err.ToString());
             }
-        }
-    }
-
-
-    private void ProcessInput(string input)
-    {
-        // PROCESS INPUT RECEIVED STRING HERE
-        // print(input);
-        // pythonTest.UpdatePythonRcvdText(input); // Update text by string received from python
-
-        if (!isTxStarted) // First data arrived so tx started
-        {
-            isTxStarted = true;
         }
     }
 

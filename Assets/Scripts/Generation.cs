@@ -7,33 +7,37 @@ public class Generation : MonoBehaviour
 {
     public List<GameObject> Maps = new List<GameObject>();
     private List<GameObject> InstantiatedMapsList = new List<GameObject>();
-    public string layerName = "Ground";
+    public string groundLayerName = "Ground";
 
     public Transform player; // Assign the player's transform in the inspector
-    public float chunkTriggerDistance = 10f; // Distance at which a new chunk should be generated
+    public float chunkTriggerDistance = 15f; // Distance at which a new chunk should be generated
+    public float chunkGroundTriggerDistance = 3f; // Distance at which a new chunk should be generated
 
     float offsetX = 0;
     int currentIndex = 0;
 
     public int maxMapNumber = 10;
 
+
     void Update()
     {
         // Calculate the distance between the player and the last instantiated chunk
-        float distanceToLastChunk = Mathf.Abs(player.position.x - (offsetX - GetWidthInPixels(Maps[currentIndex].transform) / 2));
+        float distanceToLastGroundChunk = Mathf.Abs(player.position.x - (offsetX - GetWidthInPixels(Maps[currentIndex].transform, groundLayerName) / 2));
 
         // Generate a new chunk if the player is close enough to the last one
-        if (distanceToLastChunk < chunkTriggerDistance)
+        if (distanceToLastGroundChunk < chunkGroundTriggerDistance)
         {
-            GenerateMap();
+            GenerateMapGround();
         }
     }
 
-    void GenerateMap()
+    void GenerateMapGround()
     {
         var mapPrefab = Maps[currentIndex];
-        float mapWidth = GetWidthInPixels(mapPrefab.transform);
-        GameObject instantiatedMap = Instantiate(mapPrefab, new Vector3((mapWidth / 2) + offsetX, 0, 0), Quaternion.identity);
+        float mapWidth = GetWidthInPixels(mapPrefab.transform, groundLayerName);
+        GameObject instantiatedMap = Instantiate(mapPrefab, new Vector3((mapWidth / 2) + offsetX, 
+                                                                        ObjectsManager.groundHeight, 
+                                                                        0), Quaternion.identity);
         InstantiatedMapsList.Add(instantiatedMap);
         offsetX += mapWidth;
 
@@ -51,7 +55,7 @@ public class Generation : MonoBehaviour
     /// <summary>
     /// Permet d'obtenir la largeur d'une map
     /// </summary>
-    public float GetWidthInPixels(Transform parentTransform)
+    public float GetWidthInPixels(Transform parentTransform, string layerName)
     {
         float leftmostPoint = float.MaxValue;
         float rightmostPoint = float.MinValue;
@@ -61,13 +65,15 @@ public class Generation : MonoBehaviour
             if (child.gameObject.layer == LayerMask.NameToLayer(layerName))
             {
                 // Ensure the child has a SpriteRenderer attached
-                SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
+                // SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
 
-                if (spriteRenderer != null)
+                if (ObjectsManager.spriteSize(child.gameObject) != Vector2.zero)
                 {
                     // Calculate the leftmost and rightmost points
                     float positionX = child.position.x;
-                    float halfWidth = spriteRenderer.bounds.size.x * 0.5f;
+                    
+                    float halfWidth = ObjectsManager.spriteSize(child.gameObject).x * 0.5f;
+                    
 
                     float left = positionX - halfWidth;
                     float right = positionX + halfWidth;
@@ -80,6 +86,8 @@ public class Generation : MonoBehaviour
                 {
                     Debug.LogError("Some children do not have a SpriteRenderer.");
                 }
+            }else {
+                Debug.LogError("Le nom du layer est incorect, aucun objet n'a été trouvé avec le nom : " + layerName);
             }
         }
 

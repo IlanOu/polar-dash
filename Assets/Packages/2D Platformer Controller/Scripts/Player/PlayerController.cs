@@ -1,48 +1,39 @@
-﻿using System.Net.Sockets;
+﻿using System.Collections;
+using System.Net.Sockets;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace SupanthaPaul
 {
 	public class PlayerController : MonoBehaviour
 	{
-		[SerializeField] private float speed;
-		[Header("Jumping")]
-		[SerializeField] private float jumpForce;
+		[Header("Physics")]
+		[Tooltip("Physics system")]
 		[SerializeField] private float fallMultiplier;
 		[SerializeField] private Transform groundCheck;
 		[SerializeField] private float groundCheckRadius;
 		[SerializeField] private LayerMask whatIsGround;
-		[SerializeField] private int extraJumpCount = 1;
-		[SerializeField] private GameObject jumpEffect;
-		[Header("Dashing")]
-		[SerializeField] private float dashSpeed = 30f;
-		[Tooltip("Amount of time (in seconds) the player will be in the dashing speed")]
-		[SerializeField] private float startDashTime = 0.1f;
-		[Tooltip("Time (in seconds) between dashes")]
-		[SerializeField] private float dashCooldown = 0.2f;
-		// [SerializeField] private GameObject dashEffect;
 
+		[Header("Jumping")]
+		[Tooltip("Jump system")]
+		[SerializeField] private float jumpForce;
+		[SerializeField] private int extraJumpCount = 0;
+		[SerializeField] private GameObject jumpEffect;
+		private bool isJumping = false;
+		
+		[Header("Running")]
+		[Tooltip("Run system")]
+		[SerializeField] private float speed;
+		[HideInInspector] public bool canMove = true;
 		// Access needed for handling animation in Player script and other uses
 		[HideInInspector] public bool isGrounded;
-		[HideInInspector] public float moveInput;
-		[HideInInspector] public bool canMove = true;
-		// [HideInInspector] public bool isDashing = false;
-		[HideInInspector] public bool actuallyWallGrabbing = false;
 		// controls whether this instance is currently playable or not
 		[HideInInspector] public bool isCurrentlyPlayable = false;
 
-		[Header("Wall grab & jump")]
-		[Tooltip("Right offset of the wall detection sphere")]
-		public Vector2 grabRightOffset = new Vector2(0.16f, 0f);
-		public Vector2 grabLeftOffset = new Vector2(-0.16f, 0f);
-		public float grabCheckRadius = 0.24f;
-		public float slideSpeed = 2.5f;
-		public Vector2 wallJumpForce = new Vector2(10.5f, 18f);
-		public Vector2 wallClimbForce = new Vector2(4f, 14f);
+		[HideInInspector] public bool isSliding = false;
 
 		private Rigidbody2D m_rb;
 		private ParticleSystem m_dustParticle;
-		private bool m_facingRight = true;
 		private readonly float m_groundedRememberTime = 0.25f;
 		private float m_groundedRemember = 0f;
 		private int m_extraJumps;
@@ -50,6 +41,13 @@ namespace SupanthaPaul
 
 		private string actionToPerform;
 
+		private PlayerAnimator playerAnimator;
+
+		float originalSizeX;
+		float originalSizeY;
+		float originalOffsetY;
+
+		private BoxCollider2D boxCollider;
 
 		void Start()
 		{
@@ -67,6 +65,12 @@ namespace SupanthaPaul
 			m_rb = GetComponent<Rigidbody2D>();
 			m_dustParticle = GetComponentInChildren<ParticleSystem>();
 
+			playerAnimator = GetComponent<PlayerAnimator>();
+
+			boxCollider = GetComponent<BoxCollider2D>() as BoxCollider2D;
+			originalSizeX = boxCollider.size.x;
+			originalSizeY = boxCollider.size.y;
+			originalOffsetY = boxCollider.offset.y;
 		}
 
 		private void FixedUpdate()
@@ -86,7 +90,6 @@ namespace SupanthaPaul
 				{
 					m_rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
 				}
-
 			}
 		}
 
@@ -94,7 +97,7 @@ namespace SupanthaPaul
 		{
 			CheckMovement();
 			// horizontal input
-			moveInput = InputSystem.HorizontalRaw();
+			// moveInput = InputSystem.HorizontalRaw();
 
 			if (isGrounded)
 			{
@@ -106,18 +109,16 @@ namespace SupanthaPaul
 			if (isGrounded)
 				m_groundedRemember = m_groundedRememberTime;
 
-			if (!isCurrentlyPlayable) return;
+			if (!isCurrentlyPlayable) 
+				return;
 
 			// Jumping
-			if(InputSystem.Jump() && m_extraJumps > 0 && !isGrounded)	// extra jumping
+			if(isJumping && m_extraJumps > 0 && !isGrounded)	// extra jumping
 			{
 				m_rb.velocity = new Vector2(m_rb.velocity.x, m_extraJumpForce); ;
 				m_extraJumps--;
 				// jumpEffect
 				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
-				
-				// ! Socket get 
-				Debug.Log(UdpSocket.textRecieved);
 			}
 			else if(actionToPerform == "jump" && (isGrounded || m_groundedRemember > 0f))	// normal single jumping
 			{
@@ -126,14 +127,36 @@ namespace SupanthaPaul
 				// jumpEffect
 				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
 			}
+			
+			
+			//* ++ Slide
+			isSliding = Input.GetButtonDown("Fire1");
+			if (isSliding && isGrounded)
+			{
+				// Réduire la taille du BoxCollider pendant la glissade
+				boxCollider.size = new Vector2(boxCollider.size.x, originalSizeY / 2f);
 
+				// Ajuster l'origine pour que la boîte de collision diminue du haut vers le bas
+				boxCollider.offset = new Vector2(boxCollider.offset.x, originalOffsetY - originalSizeY / 4f);
+
+				// Lancer la coroutine pour réinitialiser la taille du collider après un certain délai
+				StartCoroutine(ResetColliderSize(1f));
+			}
 		}
-		private void OnDrawGizmosSelected()
+
+		IEnumerator ResetColliderSize(float delay)
 		{
-			Gizmos.color = Color.red;
-			Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
-			Gizmos.DrawWireSphere((Vector2)transform.position + grabRightOffset, grabCheckRadius);
-			Gizmos.DrawWireSphere((Vector2)transform.position + grabLeftOffset, grabCheckRadius);
+			// Attendre pendant le délai spécifié
+			yield return new WaitForSeconds(delay);
+
+			// Remettre la taille du BoxCollider à la normale
+			boxCollider.size = new Vector2(originalSizeX, originalSizeY);
+
+			// Remettre l'origine à sa position d'origine
+			boxCollider.offset = new Vector2(boxCollider.offset.x, originalOffsetY);
+
+			// Réactiver la possibilité de glisser
+			isSliding = false;
 		}
 
 		void CheckMovement()
