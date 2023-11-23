@@ -2,6 +2,7 @@ from statistics import mean
 import math
 import globals_vars as gv
 import PoseModule
+import time
 
 class PoseDetection:
 
@@ -51,17 +52,22 @@ class PoseDetection:
     side = "None"
     print_active = True
     nose_y_points = [] # Use for avg value of nose
+    default_y_nose = None
+    analyse_duration = gv.ANALYSE_DURATION
     lmList = None
     here = False
     old_here = False
     jump = False
     old_jump = False
+    jump_start = 0
     squat = False
     old_squat = False
     arms_top = False
     old_arms_top = False
     arms_bottom = False
     old_arms_bottom = False
+    arms_side = False
+    old_arms_side = False
     arms_left = False
     old_arms_left = False
     arms_right = False
@@ -82,12 +88,17 @@ class PoseDetection:
     def calcul_distance(self, point1, point2):
         return math.sqrt((point1[1] - point2[1])**2 + (point1[2] - point2[2])**2)
     
-    def auto_config(self):
+    def auto_config(self, startTime):
         try:
-            hip = self.lmList[gv.LEFT_HIP]
-            knee = self.lmList[gv.LEFT_KNEE]
-            femur_size = self.calcul_distance(hip, knee)
-            return femur_size
+            if not self.jump and time.time() >= startTime + self.analyse_duration:
+                self.default_y_nose = self.lmList[gv.NOSE][2]
+                self.analyse_duration += gv.ANALYSE_DURATION
+
+
+            left_shoulder = self.lmList[gv.LEFT_SHOULDER]
+            right_shoulder = self.lmList[gv.RIGHT_SHOULDER]
+            shoulders_size = self.calcul_distance(left_shoulder, right_shoulder)
+            return shoulders_size
         except Exception as e:
             if self.print_active:
                 print(e)
@@ -173,12 +184,25 @@ class PoseDetection:
                 if self.print_active:
                     print(e)
 
-    def isJump(self, jump_range):
-        if len(self.nose_y_points) > 0:
+    def checkNoErrorJump(self, jump_range):
+        if time.time() >= self.jump_start + gv.ANALYSE_DURATION:
             try:
                 nose_y = self.lmList[gv.NOSE][2]
-                avg_y_points = mean(self.nose_y_points)
+                self.default_y_nose = nose_y - jump_range
+            except Exception as e:
+                if self.print_active:
+                    print(e)
+
+    def isJump(self, jump_range):
+        if self.default_y_nose != None:
+            try:
+                nose_y = self.lmList[gv.NOSE][2]
+                avg_y_points = self.default_y_nose
                 if nose_y < avg_y_points - jump_range:
+                    if not self.jump:
+                        self.jump_start = time.time()
+                    else:
+                        self.checkNoErrorJump(jump_range)
                     self.jump = True
                     return
             except Exception as e:
@@ -234,11 +258,13 @@ class PoseDetection:
             if self.side == "LEFT":
                 self.arms_top = self.isInSquare(left_hand, gv.TOP_AREA[0]) and self.isInSquare(right_hand, gv.TOP_AREA[0])
                 self.arms_bottom = self.isInSquare(left_hand, gv.BOTTOM_AREA[0]) and self.isInSquare(right_hand, gv.BOTTOM_AREA[0])
+                self.arms_side = self.isInSquare(left_hand, gv.LEFT_AREA[0]) and self.isInSquare(right_hand, gv.RIGHT_AREA[0])
                 self.arms_left = self.isInSquare(left_hand, gv.LEFT_AREA[0]) and self.isInSquare(right_hand, gv.LEFT_AREA[0])
                 self.arms_right = self.isInSquare(left_hand, gv.RIGHT_AREA[0]) and self.isInSquare(right_hand, gv.RIGHT_AREA[0])
             if self.side == "RIGHT":
                 self.arms_top = self.isInSquare(left_hand, gv.TOP_AREA[1]) and self.isInSquare(right_hand, gv.TOP_AREA[1])
                 self.arms_bottom = self.isInSquare(left_hand, gv.BOTTOM_AREA[1]) and self.isInSquare(right_hand, gv.BOTTOM_AREA[1])
+                self.arms_side = self.isInSquare(left_hand, gv.LEFT_AREA[1]) and self.isInSquare(right_hand, gv.RIGHT_AREA[1])
                 self.arms_left = self.isInSquare(left_hand, gv.LEFT_AREA[1]) and self.isInSquare(right_hand, gv.LEFT_AREA[1])
                 self.arms_right = self.isInSquare(left_hand, gv.RIGHT_AREA[1]) and self.isInSquare(right_hand, gv.RIGHT_AREA[1])
         except Exception as e:
