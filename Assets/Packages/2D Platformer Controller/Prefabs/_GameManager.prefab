@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 8099190036412159358}
   - component: {fileID: 950155263170521835}
   - component: {fileID: 4320193998396825983}
-  - component: {fileID: 6779116918706616008}
   m_Layer: 0
   m_Name: _GameManager
   m_TagString: Untagged
@@ -87,35 +86,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 646477868097303478ec4ee319bbdd13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textAction: {fileID: 0}
+  textLevel: {fileID: 0}
+  changeLevelBar: {fileID: 0}
   currentLevel: 1
-  deltaScoreBeforeChangeLevel: 15
-  deltaLevelBeforeChangeAction: 5
-  leftMovement: 
-  rightMovement: 
-  leftAction: 
-  rightAction: 
+  deltaScoreBeforeChangeLevel: 10
+  leftActionUX: {fileID: 0}
+  rightActionUX: {fileID: 0}
+  leftMovement: jump
+  rightMovement: squat
+  leftAction: jump
+  rightAction: slide
   movementList:
   - jump
   - squat
   - top
   - bottom
-  - left
-  - right
+  - side
   actionList:
   - jump
   - slide
---- !u!114 &6779116918706616008
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 188086466629136935}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6f2701d6b8a1144c86f5fb292abbbbc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerSide: 
-  movementPerformed: 

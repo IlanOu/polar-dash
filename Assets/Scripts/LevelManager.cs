@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
@@ -5,13 +6,20 @@ using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour
 {
-    public Text textAction;
+    public Text textLevel;
+    public Text textIndicator;
+    public Text textTiming;
+    public Text textNewMovement;
+    private string defaultTextLevel = "Niveau ";
+    private string firstDefaultTextTiming = "DANS ";
+    private string secondDefaultTextTiming = "...";
+    public ChangeLevelBar changeLevelBar;
     public int currentLevel = 1;
     public int deltaScoreBeforeChangeLevel;
     private int nextScoreBeforeChangeLevel;
 
-    public int deltaLevelBeforeChangeAction;
-    private int nextLevelBeforeChangeAction;
+    public ActionUX leftActionUX;
+    public ActionUX rightActionUX;
 
     public string leftMovement;
     public string rightMovement;
@@ -37,25 +45,30 @@ public class LevelManager : MonoBehaviour
     {
         nextScoreBeforeChangeLevel = deltaScoreBeforeChangeLevel;
 
-        nextLevelBeforeChangeAction = deltaLevelBeforeChangeAction;
-        leftAction = actionList[0];
-        rightAction = actionList[1];
+        changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
 
-        ChangeMovement();
+        ChangeActionUX();
+        RefreshTextLevel();
     }
     
     void Update()
     {
+        changeLevelBar.SetValue(ScoreManager.instance.score);
+        int numberBeforeChangeLevel = nextScoreBeforeChangeLevel - ScoreManager.instance.score;
+        if (numberBeforeChangeLevel <= 3)
+        {
+            PrintTextIndicator(true, numberBeforeChangeLevel);
+        }
+        // Si on doit changer de level
         if(ScoreManager.instance.score >= nextScoreBeforeChangeLevel)
         {
             nextScoreBeforeChangeLevel += deltaScoreBeforeChangeLevel;
             currentLevel++;
+            RefreshTextLevel();
+
+            changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
+
             ChangeMovement();
-        }
-        if(currentLevel >= nextLevelBeforeChangeAction)
-        {
-            nextLevelBeforeChangeAction += deltaLevelBeforeChangeAction;
-            ChangeRole();
         }
     }
 
@@ -63,26 +76,33 @@ public class LevelManager : MonoBehaviour
     {
         leftMovement = movementList[Random.Range(0, movementList.Length)];
         rightMovement = movementList[Random.Range(0, movementList.Length)];
-        RefreshTextAction();
+        ChangeActionUX();
+        StartCoroutine(PrintTextNewMovement());
     }
 
-    void ChangeRole()
+    void RefreshTextLevel()
     {
-        string tempAction = leftAction;
-        leftAction = rightAction;
-        rightAction = tempAction;
-        RefreshTextAction();
+        textLevel.text = defaultTextLevel + currentLevel.ToString();
     }
 
-    void RefreshTextAction()
+    void ChangeActionUX()
     {
-        if (leftAction == "jump")
-        {
-            textAction.text = leftMovement + " LEFT TO JUMP";
-        }
-        if (rightAction == "jump")
-        {
-            textAction.text = rightMovement + " RIGHT TO JUMP";
-        }
+        leftActionUX.PrintImage(leftMovement);
+        rightActionUX.PrintImage(rightMovement);
+    }
+    
+    void PrintTextIndicator(bool enabled, int number = 0)
+    {
+        textIndicator.enabled = enabled;
+        textTiming.text = firstDefaultTextTiming + number + secondDefaultTextTiming;
+        textTiming.enabled = enabled;
+    }
+
+    IEnumerator PrintTextNewMovement()
+    {
+        PrintTextIndicator(false);
+        textNewMovement.enabled = true;
+        yield return new WaitForSeconds(2f);
+        textNewMovement.enabled = false;
     }
 }

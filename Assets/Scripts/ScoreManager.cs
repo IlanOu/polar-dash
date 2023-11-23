@@ -8,7 +8,7 @@ public class ScoreManager : MonoBehaviour
     public bool isCurrent = false;
     public Text textScore;
 
-    private string defaultText = "SCORE : ";
+    private string defaultText = "Score : ";
     private bool scoreUpdateInProgress = false;
 
     public static ScoreManager instance;

@@ -30,6 +30,7 @@ public class Selection : MonoBehaviour
             if(leftMovement == PlaySelection)
             {
                 // SCENE JEU
+                Debug.Log("GAME");
                 SceneManager.LoadScene("Generation_test");
             }
         }
