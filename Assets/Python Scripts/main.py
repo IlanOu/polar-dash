@@ -60,9 +60,17 @@ def auto_config(left_shouldersSize, right_shouldersSize):
         if not gv.SOLO_PLAYER:
             gv.RIGHT_SQUAT_RANGE = int(right_shouldersSize / gv.COEF_SQUAT_RANGE)
             gv.RIGHT_JUMP_RANGE = int(right_shouldersSize / gv.COEF_JUMP_RANGE)
+            gv.RIGHT_RANGE_TOP_SQUARE = int(right_shouldersSize / gv.COEF_TOP_RANGE)
+            gv.RIGHT_RANGE_BOTTOM_SQUARE = int(right_shouldersSize / gv.COEF_BOTTOM_RANGE)
+            gv.RIGHT_RANGE_LEFT_SQUARE = int(right_shouldersSize / gv.COEF_LEFT_RANGE)
+            gv.RIGHT_RANGE_RIGHT_SQUARE = int(right_shouldersSize / gv.COEF_RIGHT_RANGE)
         else:
             gv.RIGHT_SQUAT_RANGE = gv.LEFT_SQUAT_RANGE
             gv.RIGHT_JUMP_RANGE = gv.LEFT_JUMP_RANGE
+            gv.RIGHT_RANGE_TOP_SQUARE = gv.LEFT_RANGE_TOP_SQUARE
+            gv.RIGHT_RANGE_BOTTOM_SQUARE = gv.LEFT_RANGE_BOTTOM_SQUARE
+            gv.RIGHT_RANGE_LEFT_SQUARE = gv.LEFT_RANGE_LEFT_SQUARE
+            gv.RIGHT_RANGE_RIGHT_SQUARE = gv.LEFT_RANGE_RIGHT_SQUARE
     except Exception as e:
         print("Erreur analyse")
         #print(e)
@@ -148,8 +156,8 @@ while True:
             # JUMP
             left_poseDetection.isJump(gv.LEFT_JUMP_RANGE)
             right_poseDetection.isJump(gv.RIGHT_JUMP_RANGE)
-            if left_poseDetection.default_y_nose != None:
-                cv2.line(left_img, (0, left_poseDetection.default_y_nose - gv.LEFT_JUMP_RANGE), (gv.LEFT_WIDTH, left_poseDetection.default_y_nose - gv.LEFT_JUMP_RANGE), gv.RED, 2)
+            # if left_poseDetection.default_y_nose != None:
+            #     cv2.line(left_img, (0, left_poseDetection.default_y_nose - gv.LEFT_JUMP_RANGE), (gv.LEFT_WIDTH, left_poseDetection.default_y_nose - gv.LEFT_JUMP_RANGE), gv.RED, 2)
             
             # SQUAT
             left_poseDetection.isSquat(gv.LEFT_SQUAT_RANGE)
@@ -171,10 +179,10 @@ while True:
 
         # region Affichage Debug
 
-        printRect(left_img, gv.TOP_AREA[0][0], gv.TOP_AREA[0][1])
-        printRect(left_img, gv.BOTTOM_AREA[0][0], gv.BOTTOM_AREA[0][1])
-        printRect(left_img, gv.LEFT_AREA[0][0], gv.LEFT_AREA[0][1])
-        printRect(left_img, gv.RIGHT_AREA[0][0], gv.RIGHT_AREA[0][1])
+        # printRect(left_img, gv.TOP_AREA[0][0], gv.TOP_AREA[0][1])
+        # printRect(left_img, gv.BOTTOM_AREA[0][0], gv.BOTTOM_AREA[0][1])
+        # printRect(left_img, gv.LEFT_AREA[0][0], gv.LEFT_AREA[0][1])
+        # printRect(left_img, gv.RIGHT_AREA[0][0], gv.RIGHT_AREA[0][1])
 
         # printRect(right_img, gv.TOP_AREA[1][0], gv.TOP_AREA[1][1])
         # printRect(right_img, gv.BOTTOM_AREA[1][0], gv.BOTTOM_AREA[1][1])
@@ -185,32 +193,32 @@ while True:
 
         # region Résultats
 
-        active_squat = False
+        active_squat = True
         if active_squat:
             msg = "SQUAT"
-            if left_poseDetection.squat and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
+            if left_poseDetection.squat and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
                 if not left_poseDetection.old_squat:
                     sock.SendData("left:squat")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT":
                         sock.SendData("right:squat")
                 cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
-            if right_poseDetection.squat and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
+            if right_poseDetection.squat and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
                 if not right_poseDetection.old_squat:
                     sock.SendData("right:squat")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT":
                         sock.SendData("left:squat")
                 cv2.putText(right_img, msg, (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
 
-        active_jump = False
+        active_jump = True
         if active_jump:
             msg = "SAUTE"
-            if left_poseDetection.jump and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
+            if left_poseDetection.jump and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
                 if not left_poseDetection.old_jump:
                     sock.SendData("left:jump")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT":
                         sock.SendData("right:jump")
                 cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.GREEN, 2)
-            if right_poseDetection.jump and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
+            if right_poseDetection.jump and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
                 if not right_poseDetection.old_jump:
                     sock.SendData("right:jump")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT":
@@ -220,26 +228,26 @@ while True:
         active_arms_pos = True
         if active_arms_pos:
             msg = "TOP"
-            if left_poseDetection.arms_top and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
+            if left_poseDetection.arms_top and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
                 if not left_poseDetection.old_arms_top:
                     sock.SendData("left:top")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT":
                         sock.SendData("right:top")
                 cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
-            if right_poseDetection.arms_top and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
+            if right_poseDetection.arms_top and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
                 if not right_poseDetection.old_arms_top:
                     sock.SendData("right:top")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT":
                         sock.SendData("left:top")
                 cv2.putText(right_img, msg, (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
             msg = "BOTTOM"
-            if left_poseDetection.arms_bottom and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
+            if left_poseDetection.arms_bottom and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
                 if not left_poseDetection.old_arms_bottom:
                     sock.SendData("left:bottom")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT":
                         sock.SendData("right:bottom")
                 cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
-            if right_poseDetection.arms_bottom and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
+            if right_poseDetection.arms_bottom and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
                 if not right_poseDetection.old_arms_bottom:
                     sock.SendData("right:bottom")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT":
@@ -247,13 +255,13 @@ while True:
                 cv2.putText(right_img, msg, (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
             
             msg = "SIDE"
-            if left_poseDetection.arms_side and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
+            if left_poseDetection.arms_side and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
                 if not left_poseDetection.old_arms_side:
                     sock.SendData("left:side")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT":
                         sock.SendData("right:side")
                 cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
-            if right_poseDetection.arms_side and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
+            if right_poseDetection.arms_side and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
                 if not right_poseDetection.old_arms_side:
                     sock.SendData("right:side")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT":
@@ -261,26 +269,26 @@ while True:
                 cv2.putText(right_img, msg, (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
 
             msg = "LEFT"
-            if left_poseDetection.arms_left and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
+            if left_poseDetection.arms_left and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
                 if not left_poseDetection.old_arms_left:
                     sock.SendData("left:left")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT":
                         sock.SendData("right:left")
                 cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
-            if right_poseDetection.arms_left and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
+            if right_poseDetection.arms_left and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
                 if not right_poseDetection.old_arms_left:
                     sock.SendData("right:left")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT":
                         sock.SendData("left:left")
                 cv2.putText(right_img, msg, (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
             msg = "RIGHT"
-            if left_poseDetection.arms_right and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
+            if left_poseDetection.arms_right and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT")):
                 if not left_poseDetection.old_arms_right:
                     sock.SendData("left:right")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "LEFT":
                         sock.SendData("right:right")
                 cv2.putText(left_img, msg, (int(gv.LEFT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
-            if right_poseDetection.arms_right and (not gv.SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
+            if right_poseDetection.arms_right and (not gv.IS_SOLO_PLAYER or (gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT")):
                 if not right_poseDetection.old_arms_right:
                     sock.SendData("right:right")
                     if gv.IS_SOLO_PLAYER and gv.SOLO_PLAYER == "RIGHT":
