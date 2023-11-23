@@ -5,7 +5,7 @@ using UnityEngine;
 public class parallax_script : MonoBehaviour
 {
     SpriteRenderer[] spriteren=new SpriteRenderer[3];
-    public Sprite bacground_image;
+    public Sprite background_image;
     public Camera your_camera;
     [SerializeField] float parallax_value;
     [SerializeField]int layer_order;
@@ -19,7 +19,7 @@ public class parallax_script : MonoBehaviour
         startposition=transform.position;
         for(int i=0;i<3;i++)
         {
-            spriteren[i].sprite=bacground_image;
+            spriteren[i].sprite=background_image;
             spriteren[i].sortingOrder=layer_order;
             
             if(i==1)
@@ -89,7 +89,8 @@ public class parallax_script : MonoBehaviour
 
         }
         relative_pos.z=0;
-        transform.position=startposition+relative_pos;
+        // transform.position=startposition+relative_pos;
+        transform.position= new Vector3(startposition.x+relative_pos.x, transform.position.y, startposition.z);
         
         
     }

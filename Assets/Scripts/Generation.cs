@@ -13,7 +13,7 @@ public class Generation : MonoBehaviour
     public float chunkTriggerDistance = 15f; // Distance at which a new chunk should be generated
     public float chunkGroundTriggerDistance = 3f; // Distance at which a new chunk should be generated
 
-    float offsetX = 0;
+    float offsetX = -2f;
     int currentIndex = 0;
 
     public int maxMapNumber = 10;

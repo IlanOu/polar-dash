@@ -23,15 +23,17 @@ public class ObstaclesFactory : MonoBehaviour
 
 
     private void Update() {
-        timeSinceLastSpawn += Time.deltaTime;
+        if (GameManager.instance.isRunning){
+            timeSinceLastSpawn += Time.deltaTime;
 
-        if (timeSinceLastSpawn >= spawnFrequency){
-            randomRange = Random.Range(0, spawnDistanceToPlayer/2);
-            createObstacle();
-            timeSinceLastSpawn = 0f;
+            if (timeSinceLastSpawn >= spawnFrequency){
+                randomRange = Random.Range(0, spawnDistanceToPlayer/2);
+                createObstacle();
+                timeSinceLastSpawn = 0f;
+            }
+
+            destroyOldObstacles();
         }
-
-        destroyOldObstacles();
     }
 
     void createObstacle(){
