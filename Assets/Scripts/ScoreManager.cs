@@ -11,6 +11,7 @@ public class ScoreManager : MonoBehaviour
 
     private string defaultText = "Score : ";
     private bool scoreUpdateInProgress = false;
+    private Coroutine scoreCoroutine;
 
     public static ScoreManager instance;
     void Awake()
@@ -30,25 +31,41 @@ public class ScoreManager : MonoBehaviour
     }
 
     void Update()
+{
+    if (!scoreUpdateInProgress && isCurrent) //  && GameManager.instance.isRunning
     {
-        if (!scoreUpdateInProgress && isCurrent)
-        {
-            scoreUpdateInProgress = true;
-            StartCoroutine(AddScoreEverySecond());
-        }
-    }
+        scoreUpdateInProgress = true;
 
-    IEnumerator AddScoreEverySecond()
-    {
-        if (isCurrent)
+        // Arrêter la coroutine existante si elle existe
+        if (scoreCoroutine != null)
         {
-            yield return new WaitForSeconds(1f);
-            scoreUpdateInProgress = false;
-
-            score++;
-            UpdateScoreText();
+            StopCoroutine(scoreCoroutine);
         }
+
+        // Démarrer une nouvelle coroutine
+        scoreCoroutine = StartCoroutine(AddScoreEverySecond());
     }
+    // else if (!isCurrent || !GameManager.instance.isRunning)
+    // {
+    //     // Si le jeu n'est plus en cours, arrêter la coroutine existante
+    //     if (scoreCoroutine != null)
+    //     {
+    //         StopCoroutine(scoreCoroutine);
+    //     }
+    //     scoreCoroutine = null;
+    //     scoreUpdateInProgress = false;
+    // }
+}
+
+IEnumerator AddScoreEverySecond()
+{
+    yield return new WaitForSeconds(1f);
+    score++;
+    UpdateScoreText();
+
+    // La coroutine s'arrête ici si le jeu n'est plus en cours
+    scoreUpdateInProgress = false;
+}
 
     void UpdateScoreText()
     {

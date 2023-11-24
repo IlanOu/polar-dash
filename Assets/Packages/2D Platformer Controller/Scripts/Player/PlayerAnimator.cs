@@ -7,10 +7,13 @@ namespace SupanthaPaul
 		private Rigidbody2D m_rb;
 		private PlayerController m_controller;
 		private Animator m_anim;
+		private DyingSystem dyingSystem;
 		private static readonly int Move = Animator.StringToHash("Move");
 		private static readonly int JumpState = Animator.StringToHash("JumpState");
 		private static readonly int IsJumping = Animator.StringToHash("IsJumping");
 		private static readonly int WallGrabbing = Animator.StringToHash("WallGrabbing");
+		private static readonly int IsSliding = Animator.StringToHash("IsSliding");
+		private static readonly int IsDying = Animator.StringToHash("IsDying");
 		private static readonly int IsSliding = Animator.StringToHash("IsSliding");
 		private static readonly int IsDying = Animator.StringToHash("IsDying");
 
@@ -18,6 +21,7 @@ namespace SupanthaPaul
 		{
 			m_anim = GetComponentInChildren<Animator>();
 			m_controller = GetComponent<PlayerController>();
+			dyingSystem = GetComponent<DyingSystem>();
 			m_rb = GetComponent<Rigidbody2D>();
 		}
 
@@ -35,6 +39,7 @@ namespace SupanthaPaul
 			if (!m_controller.isGrounded)
 			{
 				m_anim.SetBool(IsJumping, true);
+				Sounds_Manager.instance.playJumpSound();
 				Sounds_Manager.instance.playJumpSound();
 			}
 			else
