@@ -8,13 +8,13 @@ using UnityEngine.UI;
 public class LevelManager : MonoBehaviour
 {
     public TextMeshProUGUI textLevel;
-    public Text textIndicator;
-    public Text textTiming;
-    public Text textNewMovement;
+    public TextMeshProUGUI textIndicator;
+    public TextMeshProUGUI textNewMovement;
     private string defaultTextLevel = "Niveau ";
-    private string firstDefaultTextTiming = "DANS ";
-    private string secondDefaultTextTiming = "...";
+    private string firstDefaultTextIndicator = "Changement de mouvement dans ";
+    private string secondDefaultTextIndicator = "...";
     public ChangeLevelBar changeLevelBar;
+    [HideInInspector] public GameObject GO_parentChangeLevelBar;
     public int currentLevel = 1;
     public int deltaScoreBeforeChangeLevel;
     private int nextScoreBeforeChangeLevel;
@@ -34,6 +34,8 @@ public class LevelManager : MonoBehaviour
     public static LevelManager instance;
     void Awake()
     {
+        GO_parentChangeLevelBar = changeLevelBar.transform.parent.gameObject;
+
         if (instance)
         {
             Debug.Log("IL existe déjà une instance de LevelManager dans cette scène");
@@ -94,9 +96,9 @@ public class LevelManager : MonoBehaviour
     
     void PrintTextIndicator(bool enabled, int number = 0)
     {
+        GO_parentChangeLevelBar.SetActive(false);
         textIndicator.enabled = enabled;
-        textTiming.text = firstDefaultTextTiming + number + secondDefaultTextTiming;
-        textTiming.enabled = enabled;
+        textIndicator.text = firstDefaultTextIndicator + number.ToString() + secondDefaultTextIndicator;
     }
 
     IEnumerator PrintTextNewMovement()
@@ -105,5 +107,6 @@ public class LevelManager : MonoBehaviour
         textNewMovement.enabled = true;
         yield return new WaitForSeconds(2f);
         textNewMovement.enabled = false;
+        GO_parentChangeLevelBar.SetActive(true);
     }
 }
