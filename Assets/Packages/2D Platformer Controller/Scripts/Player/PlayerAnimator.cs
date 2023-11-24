@@ -14,8 +14,7 @@ namespace SupanthaPaul
 		private static readonly int WallGrabbing = Animator.StringToHash("WallGrabbing");
 		private static readonly int IsSliding = Animator.StringToHash("IsSliding");
 		private static readonly int IsDying = Animator.StringToHash("IsDying");
-		private static readonly int IsSliding = Animator.StringToHash("IsSliding");
-		private static readonly int IsDying = Animator.StringToHash("IsDying");
+
 
 		private void Start()
 		{
