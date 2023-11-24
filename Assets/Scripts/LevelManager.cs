@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
@@ -6,7 +7,7 @@ using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour
 {
-    public Text textLevel;
+    public TextMeshProUGUI textLevel;
     public Text textIndicator;
     public Text textTiming;
     public Text textNewMovement;
