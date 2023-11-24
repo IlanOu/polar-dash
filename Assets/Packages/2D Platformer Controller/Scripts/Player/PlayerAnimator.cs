@@ -35,6 +35,8 @@ namespace SupanthaPaul
 			// Jump animation
 
 			if (!m_controller.isGrounded)
+
+			if (!m_controller.isGrounded)
 			{
 				m_anim.SetBool(IsJumping, true);
 				Sounds_Manager.instance.playJumpSound();
@@ -58,14 +60,18 @@ namespace SupanthaPaul
 
 		public float GetSlideAnimationDuration(string animationName)
 		{
+			// Récupérer l'état de l'animation par son nom
 			AnimatorStateInfo state = m_anim.GetCurrentAnimatorStateInfo(0);
 
+			// Vérifier si l'animation spécifiée est en cours
 			if (state.IsName(animationName))
 			{
+				// Retourner la durée totale de l'animation
 				return state.length;
 			}
 			else
 			{
+				// Retourner une valeur par défaut si l'animation n'est pas en cours
 				return 0f;
 			}
 		}

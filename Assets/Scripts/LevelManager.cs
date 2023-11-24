@@ -21,11 +21,11 @@ public class LevelManager : MonoBehaviour
     public ActionUX leftActionUX;
     public ActionUX rightActionUX;
 
-    public string leftMovement;
-    public string rightMovement;
+    [HideInInspector] public string leftMovement;
+    [HideInInspector] public string rightMovement;
 
-    public string leftAction;
-    public string rightAction;
+    [HideInInspector] public string leftAction;
+    [HideInInspector] public string rightAction;
 
     public string[] movementList;
     public string[] actionList;

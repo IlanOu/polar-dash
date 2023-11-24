@@ -57,7 +57,7 @@ def auto_config(left_shouldersSize, right_shouldersSize):
         gv.LEFT_RANGE_LEFT_SQUARE = int(left_shouldersSize / gv.COEF_LEFT_RANGE)
         gv.LEFT_RANGE_RIGHT_SQUARE = int(left_shouldersSize / gv.COEF_RIGHT_RANGE)
         
-        if not gv.SOLO_PLAYER:
+        if not gv.IS_SOLO_PLAYER:
             gv.RIGHT_SQUAT_RANGE = int(right_shouldersSize / gv.COEF_SQUAT_RANGE)
             gv.RIGHT_JUMP_RANGE = int(right_shouldersSize / gv.COEF_JUMP_RANGE)
             gv.RIGHT_RANGE_TOP_SQUARE = int(right_shouldersSize / gv.COEF_TOP_RANGE)
@@ -296,14 +296,14 @@ while True:
                 cv2.putText(right_img, msg, (int(gv.RIGHT_WIDTH/2 - (gv.CARACTER_WIDTH*len(msg)/2)), 0 + gv.CARACTER_HEIGHT), cv2.FONT_HERSHEY_SIMPLEX, 1, gv.RED, 2)
 
 
-        # if left_poseDetection.here and not left_poseDetection.old_here:
-        #     sock.SendData("left:here")
-        # elif not left_poseDetection.here and left_poseDetection.old_here:
-        #     sock.SendData("left:nothere")
-        # if right_poseDetection.here and not right_poseDetection.old_here:
-        #     sock.SendData("right:here")
-        # elif not right_poseDetection.here and right_poseDetection.old_here:
-        #     sock.SendData("right:nothere")
+        if left_poseDetection.here and not left_poseDetection.old_here:
+            sock.SendData("left:here")
+        elif not left_poseDetection.here and left_poseDetection.old_here:
+            sock.SendData("left:nothere")
+        if right_poseDetection.here and not right_poseDetection.old_here:
+            sock.SendData("right:here")
+        elif not right_poseDetection.here and right_poseDetection.old_here:
+            sock.SendData("right:nothere")
 
         left_poseDetection.refreshOldValue()
         right_poseDetection.refreshOldValue()
