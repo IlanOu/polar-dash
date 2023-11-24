@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-
     public GameObject player;
     [SerializeField] private Rigidbody2D rb;
 
@@ -22,8 +21,11 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // player.transform.position = new Vector2(player.transform.position.x + speed_x , player.transform.position.y + speed_y);
-        rb.velocity = new Vector2(speed_x, speed_y);
+        if (GameManager.instance.isRunning){
+            rb.velocity = new Vector2(speed_x, speed_y);
+        }else{
+            rb.velocity = Vector2.zero;
+        }
     }
 
     public void Update_Speed(string direction)

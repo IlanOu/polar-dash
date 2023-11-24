@@ -5,10 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class Selection : MonoBehaviour
 {
-    public string HowToPlaySelection;
-    public string PlaySelection;
+    public string HowToPlaySelection = "bottom";
+    public string PlaySelection = "top";
     private string leftMovement;
     private string rightMovement;
+    public string gameScene = "Game";
     
     void Update()
     {
@@ -31,7 +32,7 @@ public class Selection : MonoBehaviour
             {
                 // SCENE JEU
                 Debug.Log("GAME");
-                SceneManager.LoadScene("Generation_test");
+                SceneManager.LoadScene(gameScene);
             }
         }
     }

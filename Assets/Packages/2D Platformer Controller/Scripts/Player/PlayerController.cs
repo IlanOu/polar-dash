@@ -80,7 +80,7 @@ namespace SupanthaPaul
 			var position = transform.position;
 			
 			// if this instance is currently playable
-			if (isCurrentlyPlayable)
+			if (isCurrentlyPlayable && GameManager.instance.isRunning)
 			{
 				//* ++ Avancer en continue
 				m_rb.velocity = new Vector2(speed, m_rb.velocity.y);
