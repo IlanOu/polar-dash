@@ -10,7 +10,7 @@ public class ObstaclesFactory : MonoBehaviour
     [SerializeField] private int maxObstaclesCount = 10;
     [SerializeField] private bool isGenerationEnabled = true;
     [Range(0.5f, 6f)]
-    [SerializeField] private float spawnFrequency = 1f;
+    [SerializeField] private float spawnFrequency = 2f;
     [SerializeField] private float spawnDistanceToPlayer = 10f;
     
     [Header("Dependencies")]
