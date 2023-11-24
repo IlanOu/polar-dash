@@ -87,6 +87,4 @@ node_modules
 
 # Python Script
 /[Aa]ssets/Python Scripts/__pycache__
-*.meta
-*.pyc
 *.pyc

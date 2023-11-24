@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,7 +7,7 @@ public class ScoreManager : MonoBehaviour
 {
     public int score = 0;
     public bool isCurrent = false;
-    public Text textScore;
+    public TextMeshProUGUI textScore;
 
     private string defaultText = "Score : ";
     private bool scoreUpdateInProgress = false;
@@ -53,4 +54,5 @@ public class ScoreManager : MonoBehaviour
     {
         textScore.text = defaultText + score.ToString();
     }
+
 }
