@@ -6,6 +6,8 @@ public class DataTreat : MonoBehaviour
     public string movementPerformed;
     public bool leftPlayerPresence;
     public bool rightPlayerPresence;
+    public UdpSocket udpSocket;
+    public string imagePath = null;
 
     public static DataTreat instance;
 
@@ -30,17 +32,24 @@ public class DataTreat : MonoBehaviour
             return;
         }
 
-        string side = data[0].ToLower();
-        string movement = data[1].ToLower();
-
-        if (movement == "here" || movement == "nothere")
+        if(data[0].ToLower() == "image")
         {
-            SetPlayerPresence(side, movement);
+            imagePath = data[1];
         }
         else
         {
-            playerSide = side;
-            movementPerformed = movement;
+            string side = data[0].ToLower();
+            string movement = data[1].ToLower();
+
+            if (movement == "here" || movement == "nothere")
+            {
+                SetPlayerPresence(side, movement);
+            }
+            else
+            {
+                playerSide = side;
+                movementPerformed = movement;
+            }
         }
     }
 
@@ -63,5 +72,10 @@ public class DataTreat : MonoBehaviour
         movementPerformed = "";
         leftPlayerPresence = false;
         rightPlayerPresence = false;
+    }
+
+    public void SendMessageToTakePhoto()
+    {
+        udpSocket.SendData("takePhoto");
     }
 }

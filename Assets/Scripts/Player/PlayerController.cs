@@ -39,7 +39,7 @@ namespace SupanthaPaul
 		private int m_extraJumps;
 		private float m_extraJumpForce;
 
-		private string actionToPerform;
+		public string actionToPerform;
 
 		private PlayerAnimator playerAnimator;
 
@@ -96,8 +96,6 @@ namespace SupanthaPaul
 		private void Update()
 		{
 			CheckMovement();
-			// horizontal input
-			// moveInput = InputSystem.HorizontalRaw();
 
 			if (isGrounded)
 			{
@@ -122,7 +120,6 @@ namespace SupanthaPaul
 			}
 			else if(actionToPerform == "jump" && (isGrounded || m_groundedRemember > 0f))	// normal single jumping
 			{
-				actionToPerform = "";
 				m_rb.velocity = new Vector2(m_rb.velocity.x, jumpForce);
 				// jumpEffect
 				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
@@ -130,9 +127,15 @@ namespace SupanthaPaul
 			
 			
 			//* ++ Slide
-			isSliding = Input.GetButtonDown("Fire1");
-			if (isSliding && isGrounded)
+			isSliding = Input.GetKeyDown(KeyCode.S);
+			if(isSliding)
 			{
+				actionToPerform = "slide";
+			}
+			if (actionToPerform == "slide" && isGrounded)
+			// if (isSliding && isGrounded)
+			{
+				Debug.Log("SLIDE");
 				// Réduire la taille du BoxCollider pendant la glissade
 				boxCollider.size = new Vector2(boxCollider.size.x, originalSizeY / 2f);
 
@@ -142,6 +145,7 @@ namespace SupanthaPaul
 				// Lancer la coroutine pour réinitialiser la taille du collider après un certain délai
 				StartCoroutine(ResetColliderSize(1f));
 			}
+			actionToPerform = "";
 		}
 
 		IEnumerator ResetColliderSize(float delay)
@@ -156,7 +160,7 @@ namespace SupanthaPaul
 			boxCollider.offset = new Vector2(boxCollider.offset.x, originalOffsetY);
 
 			// Réactiver la possibilité de glisser
-			isSliding = false;
+			// isSliding = false;
 		}
 
 		void CheckMovement()

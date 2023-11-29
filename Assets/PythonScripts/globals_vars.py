@@ -1,5 +1,5 @@
 ## SAVING IMAGE
-STREAMING_ASSETS_PATH = "../StreamingAssets"
+STREAMING_ASSETS_PATH = "../StreamingAssets/photos"
 MAX_IMAGE = 3
 
 ## CV2

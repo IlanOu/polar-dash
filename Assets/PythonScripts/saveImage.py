@@ -37,10 +37,12 @@ def compress_and_save_image(image):
                 encoded_image.tofile(file)
             print(f"L'image a été compressée et sauvegardée avec succès dans {destination_path}")
             check_and_delete_old_images(unity_streaming_assets_path)
+            return destination_filename
         except Exception as e:
             print(f"Erreur lors de la sauvegarde de l'image compressée : {e}")
     else:
         print("Erreur lors de la compression de l'image")
+    return None
 
 def check_and_delete_old_images(folder_path):
     # Récupérer la liste des fichiers dans le dossier

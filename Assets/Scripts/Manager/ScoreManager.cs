@@ -32,7 +32,7 @@ public class ScoreManager : MonoBehaviour
 
     void Update()
 {
-    if (!scoreUpdateInProgress && isCurrent) //  && GameManager.instance.isRunning
+    if (!scoreUpdateInProgress && isCurrent && GameManager.instance.isRunning)
     {
         scoreUpdateInProgress = true;
 
@@ -45,16 +45,16 @@ public class ScoreManager : MonoBehaviour
         // Démarrer une nouvelle coroutine
         scoreCoroutine = StartCoroutine(AddScoreEverySecond());
     }
-    // else if (!isCurrent || !GameManager.instance.isRunning)
-    // {
-    //     // Si le jeu n'est plus en cours, arrêter la coroutine existante
-    //     if (scoreCoroutine != null)
-    //     {
-    //         StopCoroutine(scoreCoroutine);
-    //     }
-    //     scoreCoroutine = null;
-    //     scoreUpdateInProgress = false;
-    // }
+    else if (!isCurrent || !GameManager.instance.isRunning)
+    {
+        // Si le jeu n'est plus en cours, arrêter la coroutine existante
+        if (scoreCoroutine != null)
+        {
+            StopCoroutine(scoreCoroutine);
+        }
+        scoreCoroutine = null;
+        scoreUpdateInProgress = false;
+    }
 }
 
 IEnumerator AddScoreEverySecond()

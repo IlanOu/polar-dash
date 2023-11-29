@@ -92,12 +92,15 @@ counter = 0
 counterLimit = 10000
 time_to_move = True
 start_time = time.time()
-test = True
 getImage = False
 photo = None
 
 while True:
     counter += 1
+    received_data = sock.ReadReceivedData()
+    if received_data != None:
+        getImage = True
+        
     if counter % 2 ==  0:
         success, img = cap.read()
         if not success:
@@ -107,10 +110,11 @@ while True:
         img = cv2.resize(img, screenSize)
         img = cv2.flip(img,1)
 
+        image_name = None
         if getImage:
             getImage = False
             photo = img
-            si.compress_and_save_image(photo)
+            image_name = si.compress_and_save_image(photo)
 
         cv2.line(img, (gv.SCREEN_SEPARATOR, 0), (gv.SCREEN_SEPARATOR, gv.HEIGHT), gv.BLACK, 2)
 
@@ -307,6 +311,9 @@ while True:
 
         left_poseDetection.refreshOldValue()
         right_poseDetection.refreshOldValue()
+
+        if image_name != None:
+            sock.SendData(f"image:{image_name}")
 
         if not time_to_move:
             msg = "ATTENDEZ LORS DE L'ANALYSE"

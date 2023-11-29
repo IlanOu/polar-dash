@@ -22,6 +22,7 @@ public class DyingSystem : MonoBehaviour
         if (collision.tag == "Obstacle"){
             GameManager.instance.isRunning = false;
             isDead = true;
+            DataTreat.instance.SendMessageToTakePhoto();
         }
     }
 }
