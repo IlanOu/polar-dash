@@ -86,5 +86,8 @@ node_modules
 .DS_Store
 
 # Python Script
-/[Aa]ssets/Python Scripts/__pycache__
+/[Aa]ssets/PythonScripts/__pycache__
 *.pyc
+
+# StreamingAssets
+/[Aa]ssets/StreamingAssets
