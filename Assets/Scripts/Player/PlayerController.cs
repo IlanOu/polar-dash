@@ -110,7 +110,12 @@ namespace SupanthaPaul
 			if (!isCurrentlyPlayable) 
 				return;
 
-			// Jumping
+			//* Jumping
+			isJumping = Input.GetButtonDown("Jump");
+			if (isJumping){
+				actionToPerform = "jump";
+			}
+
 			if(isJumping && m_extraJumps > 0 && !isGrounded)	// extra jumping
 			{
 				m_rb.velocity = new Vector2(m_rb.velocity.x, m_extraJumpForce); ;

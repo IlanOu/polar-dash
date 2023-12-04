@@ -7,21 +7,24 @@ using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour
 {
-    public TextMeshProUGUI textLevel;
-    public TextMeshProUGUI textIndicator;
-    public TextMeshProUGUI textNewMovement;
-    private string defaultTextLevel = "Niveau ";
     private string firstDefaultTextIndicator = "Changement de mouvement dans ";
     private string secondDefaultTextIndicator = "...";
-    public ChangeLevelBar changeLevelBar;
     [HideInInspector] public GameObject GO_parentChangeLevelBar;
     public int currentLevel = 1;
     public int deltaScoreBeforeChangeLevel;
     private int nextScoreBeforeChangeLevel;
+    private int currentStepLevel = 0;
 
+    [Header("Interfaces")]
+    public TextMeshProUGUI textLevel;
+    public TextMeshProUGUI textIndicator;
+    public TextMeshProUGUI textNewMovement;
+    private string defaultTextLevel = "Niveau ";
     public ActionUX leftActionUX;
     public ActionUX rightActionUX;
+    public ChangeLevelBar changeLevelBar;
 
+    [Header("Mouvements")]
     [HideInInspector] public string leftMovement;
     [HideInInspector] public string rightMovement;
 
@@ -32,6 +35,9 @@ public class LevelManager : MonoBehaviour
     public string[] actionList;
     
     public static LevelManager instance;
+
+    [Header("Génération")]
+    public ObstaclesFactory obstaclesFactory;
     void Awake()
     {
         GO_parentChangeLevelBar = changeLevelBar.transform.parent.gameObject;
@@ -65,13 +71,16 @@ public class LevelManager : MonoBehaviour
         // Si on doit changer de level
         if(ScoreManager.instance.score >= nextScoreBeforeChangeLevel)
         {
+            if (currentStepLevel % 2 == 0){
+                currentLevel++;
+                obstaclesFactory.isGenerationEnabled = !obstaclesFactory.isGenerationEnabled;
+
+                RefreshTextLevel();
+                changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
+                ChangeMovement();
+            }
             nextScoreBeforeChangeLevel += deltaScoreBeforeChangeLevel;
-            currentLevel++;
-            RefreshTextLevel();
-
-            changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
-
-            ChangeMovement();
+            currentStepLevel++;
         }
     }
 

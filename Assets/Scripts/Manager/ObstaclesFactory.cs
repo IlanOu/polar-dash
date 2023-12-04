@@ -8,7 +8,7 @@ public class ObstaclesFactory : MonoBehaviour
 
     [Header("Spawn Settings")]
     [SerializeField] private int maxObstaclesCount = 10;
-    [SerializeField] private bool isGenerationEnabled = true;
+    [SerializeField] public bool isGenerationEnabled = true;
     [Range(0.5f, 6f)]
     [SerializeField] private float spawnFrequency = 2f;
     [SerializeField] private float spawnDistanceToPlayer = 10f;
@@ -23,7 +23,7 @@ public class ObstaclesFactory : MonoBehaviour
 
 
     private void Update() {
-        if (GameManager.instance.isRunning){
+        if (GameManager.instance.isRunning && isGenerationEnabled){
             timeSinceLastSpawn += Time.deltaTime;
 
             if (timeSinceLastSpawn >= spawnFrequency){
