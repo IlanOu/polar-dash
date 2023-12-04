@@ -132,6 +132,7 @@ namespace SupanthaPaul
 			{
 				actionToPerform = "slide";
 			}
+			
 			if (actionToPerform == "slide" && isGrounded)
 			// if (isSliding && isGrounded)
 			{
