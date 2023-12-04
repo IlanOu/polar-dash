@@ -13,6 +13,9 @@ public class DataTreat : MonoBehaviour
 
     private void Awake()
     {
+
+        udpSocket = GetComponent<UdpSocket>();
+
         if (instance != null)
         {
             Debug.Log("Il existe déjà cette instance de DataTreat dans cette scène");

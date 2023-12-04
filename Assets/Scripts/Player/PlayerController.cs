@@ -111,20 +111,17 @@ namespace SupanthaPaul
 				return;
 
 			//* Jumping
-			isJumping = Input.GetButtonDown("Jump");
-			if (isJumping){
-				actionToPerform = "jump";
-			}
-
-			if(isJumping && m_extraJumps > 0 && !isGrounded)	// extra jumping
+			isJumping = !isJumping ? Input.GetButtonDown("Jump") : true;
+			// if(isJumping && m_extraJumps > 0 && !isGrounded && GameManager.instance.isRunning)	// extra jumping
+			// {
+			// 	m_rb.velocity = new Vector2(m_rb.velocity.x, m_extraJumpForce); ;
+			// 	m_extraJumps--;
+			// 	// jumpEffect
+			// 	PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
+			// } else
+			if(isJumping && (isGrounded || m_groundedRemember > 0f) && GameManager.instance.isRunning)	// normal single jumping
 			{
-				m_rb.velocity = new Vector2(m_rb.velocity.x, m_extraJumpForce); ;
-				m_extraJumps--;
-				// jumpEffect
-				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
-			}
-			else if(actionToPerform == "jump" && (isGrounded || m_groundedRemember > 0f))	// normal single jumping
-			{
+				Debug.Log("JUMP");
 				m_rb.velocity = new Vector2(m_rb.velocity.x, jumpForce);
 				// jumpEffect
 				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
@@ -132,14 +129,8 @@ namespace SupanthaPaul
 			
 			
 			//* ++ Slide
-			isSliding = Input.GetKeyDown(KeyCode.S);
-			if(isSliding)
-			{
-				actionToPerform = "slide";
-			}
-			
-			if (actionToPerform == "slide" && isGrounded)
-			// if (isSliding && isGrounded)
+			isSliding = !isSliding ? Input.GetKeyDown(KeyCode.S) : true;
+			if (isSliding && isGrounded && GameManager.instance.isRunning)
 			{
 				Debug.Log("SLIDE");
 				// Réduire la taille du BoxCollider pendant la glissade
@@ -166,7 +157,7 @@ namespace SupanthaPaul
 			boxCollider.offset = new Vector2(boxCollider.offset.x, originalOffsetY);
 
 			// Réactiver la possibilité de glisser
-			// isSliding = false;
+			isSliding = false;
 		}
 
 		void CheckMovement()
@@ -183,6 +174,20 @@ namespace SupanthaPaul
 			}
 			DataTreat.instance.playerSide = "";
 			DataTreat.instance.movementPerformed = "";
+
+			switch (actionToPerform)
+			{
+				case "jump":
+					isJumping = true;
+					break;
+				case "slide":
+					isSliding = true;
+					break;
+				default:
+					isJumping = false;
+					isSliding = false;
+					break;
+			}
 		}
 	}
 }
