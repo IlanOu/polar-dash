@@ -21,12 +21,30 @@ public class DyingSystem : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Obstacle"){
-            ScoreManager.instance.UpdateBestScore();
-            GameManager.instance.isRunning = false;
-            GameManager.instance.addToDestroyOnLoad();
-            isDead = true;
-            DataTreat.instance.SendMessageToTakePhoto();
-            SceneManager.LoadScene("GameOver");
+            CollisionWithObstacle();
         }
+    }
+
+    private void CollisionWithObstacle()
+    {
+        ScoreManager.instance.UpdateBestScore();
+        GameManager.instance.isRunning = false;
+        isDead = true;
+        StartCoroutine(WaitingForTakingPhoto());
+        StartCoroutine(WaitingForLoadScene());
+        
+    }
+
+    IEnumerator WaitingForTakingPhoto()
+    {
+        yield return new WaitForSeconds(2f);
+        DataTreat.instance.SendMessageToTakePhoto();
+    }
+
+    IEnumerator WaitingForLoadScene()
+    {
+        yield return new WaitForSeconds(3f);
+        GameManager.instance.addToDestroyOnLoad();
+        SceneManager.LoadScene("GameOver");
     }
 }
