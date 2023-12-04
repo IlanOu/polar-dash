@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DyingSystem : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class DyingSystem : MonoBehaviour
 
     private void Awake() {
         if (instance != null){
-            Debug.Log("Il existe déjà une instance de GameManager dans cette scene...");
+            Debug.Log("Il existe déjà une instance de DyingSystem dans cette scene...");
             return;
         }
 
@@ -20,9 +21,12 @@ public class DyingSystem : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Obstacle"){
+            ScoreManager.instance.UpdateBestScore();
             GameManager.instance.isRunning = false;
+            GameManager.instance.addToDestroyOnLoad();
             isDead = true;
             DataTreat.instance.SendMessageToTakePhoto();
+            SceneManager.LoadScene("GameOver");
         }
     }
 }

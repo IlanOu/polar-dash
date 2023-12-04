@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -6,16 +7,16 @@ using UnityEngine.UI;
 public class ScoreManager : MonoBehaviour
 {
     public int score = 0;
+    public int bestScore = 0;
     public bool scoreIsRunning = false;
     public TextMeshProUGUI textScore;
 
     private string defaultText = "Score : ";
     private bool scoreUpdateInProgress = false;
     private Coroutine scoreCoroutine;
+    private int scoreForNextLevel = 10; // Définissez le nombre de points nécessaires pour passer au niveau suivant
 
     public static ScoreManager instance;
-
-    private int scoreForNextLevel = 10; // Définissez le nombre de points nécessaires pour passer au niveau suivant
 
     void Awake()
     {
@@ -83,5 +84,10 @@ public class ScoreManager : MonoBehaviour
     void UpdateScoreText()
     {
         textScore.text = defaultText + score.ToString();
+    }
+
+    public void UpdateBestScore()
+    {
+        bestScore = Math.Max(score, bestScore);
     }
 }

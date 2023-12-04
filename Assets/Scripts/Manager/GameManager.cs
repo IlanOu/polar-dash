@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
         textStartingGame.text = number;
     }
 
-    public void beforeEndScene()
+    public void addToDestroyOnLoad()
     {
         DontDestroyOnLoadScene.instance.addObjectToDontDestroyOnLoad(this.gameObject);
     }
