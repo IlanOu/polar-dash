@@ -35,5 +35,9 @@ public class Selection : MonoBehaviour
                 SceneManager.LoadScene(gameScene);
             }
         }
+        if(Input.GetKeyDown(KeyCode.G))
+        {
+            SceneManager.LoadScene(gameScene);
+        }
     }
 }

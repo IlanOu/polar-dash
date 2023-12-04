@@ -10,7 +10,10 @@ public class ImageLoader : MonoBehaviour
 
     void Update()
     {
-        LoadImageFromPath(DataTreat.instance.imagePath);
+        if(!GameManager.instance.isRunning)
+        {
+            LoadImageFromPath(DataTreat.instance.imagePath);
+        }
     }
 
     public void LoadImageFromPath(string path)
@@ -36,6 +39,7 @@ public class ImageLoader : MonoBehaviour
                 // Mettre à jour le composant Image avec le sprite
                 photo.sprite = sprite;
                 photo.enabled = true;
+                DataTreat.instance.imagePath = "";
             }
             else
             {

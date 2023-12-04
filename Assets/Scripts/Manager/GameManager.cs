@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        DontDestroyOnLoadScene.instance.addObjectToDontDestroyOnLoad(this.gameObject);
         GO_Parent = textStartingGame.transform.parent.gameObject;
 
         if (instance != null){
