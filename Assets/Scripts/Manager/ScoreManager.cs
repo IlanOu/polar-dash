@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ScoreManager : MonoBehaviour
 {
     public int score = 0;
-    public bool isCurrent = false;
+    public bool scoreIsRunning = false;
     public TextMeshProUGUI textScore;
 
     private string defaultText = "Score : ";
@@ -26,13 +26,13 @@ public class ScoreManager : MonoBehaviour
     
     void Start()
     {
-        isCurrent = true;
+        scoreIsRunning = true;
         UpdateScoreText();
     }
 
     void Update()
 {
-    if (!scoreUpdateInProgress && isCurrent && GameManager.instance.isRunning)
+    if (!scoreUpdateInProgress && scoreIsRunning && GameManager.instance.isRunning)
     {
         scoreUpdateInProgress = true;
 
@@ -45,7 +45,7 @@ public class ScoreManager : MonoBehaviour
         // Démarrer une nouvelle coroutine
         scoreCoroutine = StartCoroutine(AddScoreEverySecond());
     }
-    else if (!isCurrent || !GameManager.instance.isRunning)
+    else if (!scoreIsRunning || !GameManager.instance.isRunning)
     {
         // Si le jeu n'est plus en cours, arrêter la coroutine existante
         if (scoreCoroutine != null)

@@ -17,7 +17,6 @@ namespace SupanthaPaul
 		[Header("Jumping")]
 		[Tooltip("Jump system")]
 		[SerializeField] private float jumpForce;
-		[SerializeField] private int extraJumpCount = 0;
 		[SerializeField] private GameObject jumpEffect;
 		private bool isJumping = false;
 		
@@ -36,8 +35,6 @@ namespace SupanthaPaul
 		private ParticleSystem m_dustParticle;
 		private readonly float m_groundedRememberTime = 0.25f;
 		private float m_groundedRemember = 0f;
-		private int m_extraJumps;
-		private float m_extraJumpForce;
 
 		public string actionToPerform;
 
@@ -59,8 +56,6 @@ namespace SupanthaPaul
 			if (transform.CompareTag("Player"))
 				isCurrentlyPlayable = true;
 
-			m_extraJumps = extraJumpCount;
-			m_extraJumpForce = jumpForce * 0.7f;
 
 			m_rb = GetComponent<Rigidbody2D>();
 			m_dustParticle = GetComponentInChildren<ParticleSystem>();
@@ -97,11 +92,6 @@ namespace SupanthaPaul
 		{
 			CheckMovement();
 
-			if (isGrounded)
-			{
-				m_extraJumps = extraJumpCount;
-			}
-
 			// grounded remember offset (for more responsive jump)
 			m_groundedRemember -= Time.deltaTime;
 			if (isGrounded)
@@ -112,18 +102,11 @@ namespace SupanthaPaul
 
 			//* Jumping
 			isJumping = Input.GetButtonDown("Jump");
-			if (isJumping){
+			if (isJumping && GameManager.instance.isRunning && isGrounded){
 				actionToPerform = "jump";
 			}
 
-			if(isJumping && m_extraJumps > 0 && !isGrounded)	// extra jumping
-			{
-				m_rb.velocity = new Vector2(m_rb.velocity.x, m_extraJumpForce); ;
-				m_extraJumps--;
-				// jumpEffect
-				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
-			}
-			else if(actionToPerform == "jump" && (isGrounded || m_groundedRemember > 0f))	// normal single jumping
+			if(actionToPerform == "jump" && (isGrounded || m_groundedRemember > 0f))	//* normal single jumping
 			{
 				m_rb.velocity = new Vector2(m_rb.velocity.x, jumpForce);
 				// jumpEffect
@@ -133,7 +116,7 @@ namespace SupanthaPaul
 			
 			//* ++ Slide
 			isSliding = Input.GetKeyDown(KeyCode.S);
-			if(isSliding)
+			if(isSliding && GameManager.instance.isRunning)
 			{
 				actionToPerform = "slide";
 			}
