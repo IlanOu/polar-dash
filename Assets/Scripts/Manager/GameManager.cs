@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        DontDestroyOnLoadScene.instance.addObjectToDontDestroyOnLoad(this.gameObject);
         GO_Parent = textStartingGame.transform.parent.gameObject;
 
         if (instance != null){
@@ -48,5 +47,10 @@ public class GameManager : MonoBehaviour
     private void PrintMessage(string number)
     {
         textStartingGame.text = number;
+    }
+
+    public void beforeEndScene()
+    {
+        DontDestroyOnLoadScene.instance.addObjectToDontDestroyOnLoad(this.gameObject);
     }
 }
