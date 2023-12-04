@@ -5,13 +5,13 @@ using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour
 {
-    private enum GameState
+    public enum GameState
     {
         InLevel,
         BetweenLevels
     }
 
-    private GameState currentState = GameState.InLevel;
+    public GameState currentState = GameState.InLevel;
 
     private string firstDefaultTextIndicator = "Changement de mouvement dans ";
     private string secondDefaultTextIndicator = "...";
@@ -43,6 +43,7 @@ public class LevelManager : MonoBehaviour
 
     public static LevelManager instance;
 
+
     [Header("Génération")]
     public ObstaclesFactory obstaclesFactory;
 
@@ -52,11 +53,12 @@ public class LevelManager : MonoBehaviour
 
         if (instance)
         {
-            Debug.Log("IL existe déjà une instance de LevelManager dans cette scène");
+            Debug.Log("Il existe déjà une instance de LevelManager dans cette scène");
             return;
         }
         instance = this;
     }
+    
 
     void Start()
     {
@@ -80,7 +82,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    void UpdateInLevel()
+    public void UpdateInLevel()
     {
         changeLevelBar.SetValue(ScoreManager.instance.score);
         int numberBeforeChangeLevel = nextScoreBeforeChangeLevel - ScoreManager.instance.score;
@@ -114,7 +116,6 @@ public class LevelManager : MonoBehaviour
         currentState = GameState.InLevel; // Passe à l'état suivant lorsque nécessaire
     }
 
-    // Les autres méthodes restent inchangées
 
     void ChangeMovement()
     {
