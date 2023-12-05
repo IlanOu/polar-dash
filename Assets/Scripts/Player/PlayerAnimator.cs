@@ -28,6 +28,7 @@ namespace SupanthaPaul
 
 		private void Update()
 		{
+			Debug.Log(PlayerHealth.instance.isTakingDamage);
 			if (PlayerHealth.instance.isTakingDamage && PlayerHealth.instance.currentHealth > 0)
 			{
 				StartCoroutine(DamageAnimation());
@@ -84,6 +85,7 @@ namespace SupanthaPaul
 
 		private IEnumerator DamageAnimation()
 		{
+			Debug.Log("Damage Animation");
 			int nbTimeAnimation = 5;
 			float time = 0.1f;
 			for (int i = 0 ; i < nbTimeAnimation ; i++)

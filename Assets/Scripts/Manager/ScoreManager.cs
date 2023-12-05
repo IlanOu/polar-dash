@@ -1,10 +1,13 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour
 {
     public int score = 0;
+    public int bestScore = 0;
     public int stepScore = 0;
     public TextMeshProUGUI textScore;
 
@@ -103,5 +106,10 @@ public class ScoreManager : MonoBehaviour
     void UpdateScoreText()
     {
         textScore.text = DefaultText + score.ToString();
+    }
+
+    public void UpdateBestScore()
+    {
+        bestScore = Math.Max(score, bestScore);
     }
 }
