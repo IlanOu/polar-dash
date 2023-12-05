@@ -52,7 +52,8 @@ public class DyingSystem : MonoBehaviour
     IEnumerator WaitingForLoadScene()
     {
         yield return new WaitForSeconds(3f);
-        GameManager.instance.addToDestroyOnLoad();
+        GameManager.instance.DisableBeforeGameOverScene();
+        GameManager.instance.AddToDestroyOnLoad();
         SceneManager.LoadScene("GameOver");
     }
 }

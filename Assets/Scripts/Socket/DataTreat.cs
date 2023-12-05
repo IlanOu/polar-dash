@@ -52,6 +52,7 @@ public class DataTreat : MonoBehaviour
             {
                 playerSide = side;
                 movementPerformed = movement;
+                ScoreManager.instance.UpdateDictionnary(side, movement);
             }
         }
     }
