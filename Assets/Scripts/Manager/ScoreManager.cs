@@ -7,19 +7,15 @@ using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour
 {
-    public int score = 0;
-    public int bestScore = 0;
     public int stepScore = 0;
     public TextMeshProUGUI textScore;
-
     private const string DefaultText = "Score : ";
     public const int ScoreForNextLevel = 10;
     public const int TimeBetweenLevel = 5;
 
     private Coroutine scoreCoroutine;
     private Coroutine stepScoreCoroutine;
-    public Dictionary<string, int> leftPlayer;
-    public Dictionary<string, int> rightPlayer;
+    
 
     public static ScoreManager instance;
 
@@ -35,13 +31,11 @@ public class ScoreManager : MonoBehaviour
 
     void Start()
     {
-        leftPlayer = new Dictionary<string, int>();
-        rightPlayer = new Dictionary<string, int>();
         foreach(string movement in LevelManager.instance.movementList)
         {
             Debug.Log(movement);
-            leftPlayer.Add(movement, 0);
-            rightPlayer.Add(movement, 0);
+            DataStorage.instance.leftPlayer.Add(movement, 0);
+            DataStorage.instance.rightPlayer.Add(movement, 0);
         }
     }
 
@@ -102,10 +96,10 @@ public class ScoreManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
 
-        score++;
+        DataStorage.instance.score++;
         UpdateScoreText();
 
-        if (score % ScoreForNextLevel == 0)
+        if (DataStorage.instance.score % ScoreForNextLevel == 0)
         {
             LevelManager.instance.UpdateInLevel();
         }
@@ -125,23 +119,26 @@ public class ScoreManager : MonoBehaviour
 
     void UpdateScoreText()
     {
-        textScore.text = DefaultText + score.ToString();
-    }
-
-    public void UpdateBestScore()
-    {
-        bestScore = Math.Max(score, bestScore);
+        textScore.text = DefaultText + DataStorage.instance.score.ToString();
     }
 
     public void UpdateDictionnary(string side, string movement)
     {
         if(side == "left")
         {
-            leftPlayer[movement]++;
+            DataStorage.instance.leftPlayer[movement]++;
+            if(movement == "squat" || movement == "bottom")
+            {
+                DataStorage.instance.leftPlayer["jump"]--;
+            }
         }
         else if(side == "right")
         {
-            rightPlayer[movement]++;
+            DataStorage.instance.rightPlayer[movement]++;
+            if(movement == "squat" || movement == "bottom")
+            {
+                DataStorage.instance.rightPlayer["jump"]--;
+            }
         }
     }
 }
