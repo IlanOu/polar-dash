@@ -8,12 +8,9 @@ public class ImageLoader : MonoBehaviour
     public Image photo;
     private string pathBegin = "Assets/StreamingAssets/photos/";
 
-    void Update()
+    void Start()
     {
-        if(!GameManager.instance.isRunning)
-        {
-            LoadImageFromPath(DataTreat.instance.imagePath);
-        }
+        LoadImageFromPath(DataTreat.instance.imagePath);
     }
 
     public void LoadImageFromPath(string path)

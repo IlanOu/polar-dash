@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // LevelManager.instance.GO_parentChangeLevelBar.SetActive(false);
+        LevelManager.instance.GO_parentChangeLevelBar.SetActive(false);
         GO_Parent.SetActive(true);
         isRunning = false;
         StartCoroutine(waitBeforeStartGame());
@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
         }
         isRunning = true;
         GO_Parent.SetActive(false);
-        // LevelManager.instance.GO_parentChangeLevelBar.SetActive(true);
+        LevelManager.instance.GO_parentChangeLevelBar.SetActive(true);
     }
 
     private void PrintMessage(string number)
@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
         textStartingGame.text = number;
     }
 
-    public void beforeEndScene()
+    public void addToDestroyOnLoad()
     {
         DontDestroyOnLoadScene.instance.addObjectToDontDestroyOnLoad(this.gameObject);
     }

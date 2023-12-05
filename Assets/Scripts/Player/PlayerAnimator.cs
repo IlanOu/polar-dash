@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace SupanthaPaul
 {
 	public class PlayerAnimator : MonoBehaviour
 	{
+		public SpriteRenderer spriteRenderer;
 		private Rigidbody2D m_rb;
 		private PlayerController m_controller;
 		private Animator m_anim;
@@ -26,6 +28,10 @@ namespace SupanthaPaul
 
 		private void Update()
 		{
+			if (PlayerHealth.instance.isTakingDamage && PlayerHealth.instance.currentHealth > 0)
+			{
+				StartCoroutine(DamageAnimation());
+			}
 			// Idle & Running animation
 			m_anim.SetFloat(Move, Mathf.Abs(m_rb.velocity.x));
 
@@ -73,6 +79,19 @@ namespace SupanthaPaul
 			{
 				// Retourner une valeur par défaut si l'animation n'est pas en cours
 				return 0f;
+			}
+		}
+
+		private IEnumerator DamageAnimation()
+		{
+			int nbTimeAnimation = 5;
+			float time = 0.1f;
+			for (int i = 0 ; i < nbTimeAnimation ; i++)
+			{
+				spriteRenderer.enabled = false;
+				yield return new WaitForSeconds(time);
+				spriteRenderer.enabled = true;
+				yield return new WaitForSeconds(time);
 			}
 		}
 	}
