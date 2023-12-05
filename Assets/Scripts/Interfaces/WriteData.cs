@@ -11,21 +11,21 @@ public class WriteData : MonoBehaviour
     public TextMeshProUGUI rightScore;
     void Start()
     {
-        textScore.SetText(defaultTextScore + ScoreManager.instance.score.ToString());
-        textBestScore.SetText(defaultTextBestScore + ScoreManager.instance.bestScore.ToString());
+        textScore.SetText(defaultTextScore + DataStorage.instance.score.ToString());
+        textBestScore.SetText(defaultTextBestScore + DataStorage.instance.bestScore.ToString());
         leftScore.SetText(
-            "JUMP : " + ScoreManager.instance.leftPlayer["jump"].ToString() + "\n" +
-            "SQUAT : " + ScoreManager.instance.leftPlayer["squat"].ToString() + "\n" +
-            "TOP : " + ScoreManager.instance.leftPlayer["top"].ToString() + "\n" +
-            "BOTTOM : " + ScoreManager.instance.leftPlayer["bottom"].ToString() + "\n" +
-            "SIDE : " + ScoreManager.instance.leftPlayer["side"].ToString()
+            "JUMP : " + DataStorage.instance.leftPlayer["jump"].ToString() + "\n" +
+            "SQUAT : " + DataStorage.instance.leftPlayer["squat"].ToString() + "\n" +
+            "TOP : " + DataStorage.instance.leftPlayer["top"].ToString() + "\n" +
+            "BOTTOM : " + DataStorage.instance.leftPlayer["bottom"].ToString() + "\n" +
+            "SIDE : " + DataStorage.instance.leftPlayer["side"].ToString()
         );
         rightScore.SetText(
-            "JUMP : " + ScoreManager.instance.rightPlayer["jump"].ToString() + "\n" +
-            "SQUAT : " + ScoreManager.instance.rightPlayer["squat"].ToString() + "\n" +
-            "TOP : " + ScoreManager.instance.rightPlayer["top"].ToString() + "\n" +
-            "BOTTOM : " + ScoreManager.instance.rightPlayer["bottom"].ToString() + "\n" +
-            "SIDE : " + ScoreManager.instance.rightPlayer["side"].ToString()
+            "JUMP : " + DataStorage.instance.rightPlayer["jump"].ToString() + "\n" +
+            "SQUAT : " + DataStorage.instance.rightPlayer["squat"].ToString() + "\n" +
+            "TOP : " + DataStorage.instance.rightPlayer["top"].ToString() + "\n" +
+            "BOTTOM : " + DataStorage.instance.rightPlayer["bottom"].ToString() + "\n" +
+            "SIDE : " + DataStorage.instance.rightPlayer["side"].ToString()
         );
     }
 }

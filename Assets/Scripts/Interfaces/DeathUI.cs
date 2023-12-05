@@ -11,20 +11,13 @@ public class DeathUI : MonoBehaviour
     public TMP_Text LancementPartie;
 
     public int timeBeforeReplay = 5;
-
     bool coroutineStarted = false;
-
-    void Start()
-    {
-        UpdateScoreText();
-    }
 
     void Update()
     {
         if (DyingSystem.instance.isDead && !coroutineStarted){
             StartCoroutine(waitBeforeRestartGame());
         }
-        UpdateScoreText();
     }
 
     IEnumerator waitBeforeRestartGame()
@@ -38,12 +31,5 @@ public class DeathUI : MonoBehaviour
         Scene scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);
         Debug.Log("Temps écoulé ! Lancement d'une nouvelle partie...");
-    }
-
-
-
-    void UpdateScoreText()
-    {
-        scoreText.text = "Score : " + ScoreManager.instance.score.ToString();
     }
 }

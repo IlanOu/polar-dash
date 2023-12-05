@@ -85,7 +85,7 @@ public class LevelManager : MonoBehaviour
     {
         obstaclesFactory.isGenerationEnabled = true;
         // changeLevelBar.SetValue(ScoreManager.instance.score);
-        int numberBeforeChangeLevel = nextScoreBeforeChangeLevel - ScoreManager.instance.score;
+        int numberBeforeChangeLevel = nextScoreBeforeChangeLevel - DataStorage.instance.score;
         if (numberBeforeChangeLevel <= 3)
         {
             PrintTextIndicator(true, numberBeforeChangeLevel);
