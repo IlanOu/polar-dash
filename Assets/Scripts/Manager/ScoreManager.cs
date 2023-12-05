@@ -33,7 +33,6 @@ public class ScoreManager : MonoBehaviour
     {
         foreach(string movement in LevelManager.instance.movementList)
         {
-            Debug.Log(movement);
             DataStorage.instance.leftPlayer.Add(movement, 0);
             DataStorage.instance.rightPlayer.Add(movement, 0);
         }
