@@ -15,7 +15,8 @@ namespace SupanthaPaul
 		private static readonly int IsJumping = Animator.StringToHash("IsJumping");
 		private static readonly int WallGrabbing = Animator.StringToHash("WallGrabbing");
 		private static readonly int IsSliding = Animator.StringToHash("IsSliding");
-		private static readonly int IsDying = Animator.StringToHash("IsDying");
+		private static readonly int Death = Animator.StringToHash("Death");
+		private bool wasDead = false;
 
 
 		private void Start()
@@ -59,8 +60,12 @@ namespace SupanthaPaul
 			}
 
 
-			m_anim.SetBool(IsDying, DyingSystem.instance.isDead);
 			if (DyingSystem.instance.isDead){
+				if (!wasDead)
+				{
+					m_anim.SetTrigger(Death);
+					wasDead = true;
+				}
 				SoundsManager.instance.playDeadSound();
 			}
 		}
