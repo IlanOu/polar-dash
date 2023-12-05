@@ -48,6 +48,7 @@ namespace SupanthaPaul
 		float originalOffsetY;
 
 		private BoxCollider2D boxCollider;
+		private CapsuleCollider2D capsuleCollider;
 
 		void Start()
 		{
@@ -68,9 +69,10 @@ namespace SupanthaPaul
 			playerAnimator = GetComponent<PlayerAnimator>();
 
 			boxCollider = GetComponent<BoxCollider2D>() as BoxCollider2D;
-			originalSizeX = boxCollider.size.x;
-			originalSizeY = boxCollider.size.y;
-			originalOffsetY = boxCollider.offset.y;
+			capsuleCollider = GetComponent<CapsuleCollider2D>() as CapsuleCollider2D;
+			originalSizeX = capsuleCollider.size.x;
+			originalSizeY = capsuleCollider.size.y;
+			originalOffsetY = capsuleCollider.offset.y;
 		}
 
 		private void FixedUpdate()
@@ -95,7 +97,9 @@ namespace SupanthaPaul
 
 		private void Update()
 		{
-			CheckMovement();
+			// CheckMovement();
+			isSliding = false;
+			isJumping = false;
 
 			if (isGrounded)
 			{
@@ -134,10 +138,10 @@ namespace SupanthaPaul
 			{
 				Debug.Log("SLIDE");
 				// Réduire la taille du BoxCollider pendant la glissade
-				boxCollider.size = new Vector2(boxCollider.size.x, originalSizeY / 2f);
+				capsuleCollider.size = new Vector2(capsuleCollider.size.x, originalSizeY / 2f);
 
 				// Ajuster l'origine pour que la boîte de collision diminue du haut vers le bas
-				boxCollider.offset = new Vector2(boxCollider.offset.x, originalOffsetY - originalSizeY / 4f);
+				capsuleCollider.offset = new Vector2(capsuleCollider.offset.x, originalOffsetY - originalSizeY / 4f);
 
 				// Lancer la coroutine pour réinitialiser la taille du collider après un certain délai
 				StartCoroutine(ResetColliderSize(1f));
@@ -151,13 +155,13 @@ namespace SupanthaPaul
 			yield return new WaitForSeconds(delay);
 
 			// Remettre la taille du BoxCollider à la normale
-			boxCollider.size = new Vector2(originalSizeX, originalSizeY);
+			capsuleCollider.size = new Vector2(originalSizeX, originalSizeY);
 
 			// Remettre l'origine à sa position d'origine
-			boxCollider.offset = new Vector2(boxCollider.offset.x, originalOffsetY);
+			capsuleCollider.offset = new Vector2(capsuleCollider.offset.x, originalOffsetY);
 
 			// Réactiver la possibilité de glisser
-			isSliding = false;
+			// isSliding = false;
 		}
 
 		void CheckMovement()

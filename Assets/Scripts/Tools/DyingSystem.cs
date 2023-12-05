@@ -27,17 +27,25 @@ public class DyingSystem : MonoBehaviour
 
     private void CollisionWithObstacle()
     {
+        if(PlayerHealth.instance.TakeDamage(1) <= 0)
+        {
+            isDead = true;
+            DeathPlayer();
+        }
+        
+    }
+
+    void DeathPlayer()
+    {
         ScoreManager.instance.UpdateBestScore();
         GameManager.instance.isRunning = false;
-        isDead = true;
         StartCoroutine(WaitingForTakingPhoto());
         StartCoroutine(WaitingForLoadScene());
-        
     }
 
     IEnumerator WaitingForTakingPhoto()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
         DataTreat.instance.SendMessageToTakePhoto();
     }
 
