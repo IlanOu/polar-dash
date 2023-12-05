@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-
     public bool isRunning = false;
     public int timer = 3;
     public TextMeshProUGUI textStartingGame;
@@ -26,7 +25,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // LevelManager.instance.GO_parentChangeLevelBar.SetActive(false);
         GO_Parent.SetActive(true);
         isRunning = false;
         StartCoroutine(waitBeforeStartGame());
@@ -41,23 +39,10 @@ public class GameManager : MonoBehaviour
         }
         isRunning = true;
         GO_Parent.SetActive(false);
-        // LevelManager.instance.GO_parentChangeLevelBar.SetActive(true);
     }
 
     private void PrintMessage(string number)
     {
         textStartingGame.text = number;
-    }
-
-    public void AddToDestroyOnLoad()
-    {
-        DontDestroyOnLoadScene.instance.addObjectToDontDestroyOnLoad(this.gameObject);
-    }
-
-    public void DisableBeforeGameOverScene()
-    {
-        LevelManager levelManager = GetComponent<LevelManager>();
-        levelManager.enabled = false;
-        textStartingGame = null;
     }
 }
