@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,12 +18,31 @@ public class ScoreManager : MonoBehaviour
 
     private Coroutine scoreCoroutine;
     private Coroutine stepScoreCoroutine;
+    public Dictionary<string, int> leftPlayer;
+    public Dictionary<string, int> rightPlayer;
 
     public static ScoreManager instance;
 
     void Awake()
     {
+        if(instance != null)
+        {
+            Debug.Log("Il existe déjà une instance de ScoreManager dans cette scène");
+            return;
+        }
         instance = this;
+    }
+
+    void Start()
+    {
+        leftPlayer = new Dictionary<string, int>();
+        rightPlayer = new Dictionary<string, int>();
+        foreach(string movement in LevelManager.instance.movementList)
+        {
+            Debug.Log(movement);
+            leftPlayer.Add(movement, 0);
+            rightPlayer.Add(movement, 0);
+        }
     }
 
     void Update()
@@ -111,5 +131,17 @@ public class ScoreManager : MonoBehaviour
     public void UpdateBestScore()
     {
         bestScore = Math.Max(score, bestScore);
+    }
+
+    public void UpdateDictionnary(string side, string movement)
+    {
+        if(side == "left")
+        {
+            leftPlayer[movement]++;
+        }
+        else if(side == "right")
+        {
+            rightPlayer[movement]++;
+        }
     }
 }

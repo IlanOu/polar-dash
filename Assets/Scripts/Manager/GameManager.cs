@@ -49,8 +49,15 @@ public class GameManager : MonoBehaviour
         textStartingGame.text = number;
     }
 
-    public void addToDestroyOnLoad()
+    public void AddToDestroyOnLoad()
     {
         DontDestroyOnLoadScene.instance.addObjectToDontDestroyOnLoad(this.gameObject);
+    }
+
+    public void DisableBeforeGameOverScene()
+    {
+        LevelManager levelManager = GetComponent<LevelManager>();
+        levelManager.enabled = false;
+        textStartingGame = null;
     }
 }

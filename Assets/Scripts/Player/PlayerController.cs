@@ -97,9 +97,9 @@ namespace SupanthaPaul
 
 		private void Update()
 		{
-			// CheckMovement();
 			isSliding = false;
 			isJumping = false;
+			CheckMovement();
 
 			if (isGrounded)
 			{
