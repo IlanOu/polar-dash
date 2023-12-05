@@ -16,7 +16,6 @@ public class DeathUI : MonoBehaviour
 
     void Start()
     {
-        // scoreText = GetComponent<TMP_Text>();
         UpdateScoreText();
     }
 
@@ -45,7 +44,6 @@ public class DeathUI : MonoBehaviour
 
     void UpdateScoreText()
     {
-        // Utiliser directement le score numérique sans le convertir en chaîne de caractères
         scoreText.text = "Score : " + ScoreManager.instance.score.ToString();
     }
 }
