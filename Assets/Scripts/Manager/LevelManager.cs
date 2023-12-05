@@ -16,10 +16,9 @@ public class LevelManager : MonoBehaviour
     private string firstDefaultTextIndicator = "Changement de mouvement dans ";
     private string secondDefaultTextIndicator = "...";
 
-    [HideInInspector] public GameObject GO_parentChangeLevelBar;
+    // [HideInInspector] public GameObject GO_parentChangeLevelBar;
     public int currentLevel = 1;
-    public int scoreToChangeLevel = 10;
-    private int nextScoreBeforeChangeLevel;
+    public int nextScoreBeforeChangeLevel;
     private int currentStepLevel = 0;
 
     [Header("Interfaces")]
@@ -29,7 +28,7 @@ public class LevelManager : MonoBehaviour
     private string defaultTextLevel = "Niveau ";
     public ActionUX leftActionUX;
     public ActionUX rightActionUX;
-    public ChangeLevelBar changeLevelBar;
+    // public ChangeLevelBar changeLevelBar;
 
     [Header("Mouvements")]
     [HideInInspector] public string leftMovement;
@@ -49,7 +48,7 @@ public class LevelManager : MonoBehaviour
 
     void Awake()
     {
-        GO_parentChangeLevelBar = changeLevelBar.transform.parent.gameObject;
+        // GO_parentChangeLevelBar = changeLevelBar.transform.parent.gameObject;
 
         if (instance)
         {
@@ -62,8 +61,8 @@ public class LevelManager : MonoBehaviour
 
     void Start()
     {
-        nextScoreBeforeChangeLevel = scoreToChangeLevel;
-        changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
+        nextScoreBeforeChangeLevel = ScoreManager.ScoreForNextLevel;
+        // changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
         ChangeActionUX();
         RefreshTextLevel();
     }
@@ -84,36 +83,37 @@ public class LevelManager : MonoBehaviour
 
     public void UpdateInLevel()
     {
-        changeLevelBar.SetValue(ScoreManager.instance.score);
+        obstaclesFactory.isGenerationEnabled = true;
+        // changeLevelBar.SetValue(ScoreManager.instance.score);
         int numberBeforeChangeLevel = nextScoreBeforeChangeLevel - ScoreManager.instance.score;
         if (numberBeforeChangeLevel <= 3)
         {
             PrintTextIndicator(true, numberBeforeChangeLevel);
         }
 
-        if (ScoreManager.instance.score >= nextScoreBeforeChangeLevel)
+        if (ScoreManager.instance.stepScore >= nextScoreBeforeChangeLevel)
         {
+            currentState = GameState.BetweenLevels;
             currentLevel++;
             currentStepLevel++;
-            obstaclesFactory.isGenerationEnabled = !obstaclesFactory.isGenerationEnabled;
 
             RefreshTextLevel();
-            changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
+            // changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
             ChangeMovement();
             
-            nextScoreBeforeChangeLevel += scoreToChangeLevel;
-
-            currentState = GameState.BetweenLevels;
+            nextScoreBeforeChangeLevel += ScoreManager.TimeBetweenLevel;
         }
     }
 
     void UpdateBetweenLevels()
     {
-        // Code spécifique pour la période entre les niveaux
-        // Vous pouvez désactiver les obstacles, etc.
-
-        currentStepLevel++;
-        currentState = GameState.InLevel; // Passe à l'état suivant lorsque nécessaire
+        obstaclesFactory.isGenerationEnabled = false;
+        if (ScoreManager.instance.stepScore >= nextScoreBeforeChangeLevel)
+        {
+            currentStepLevel++;
+            currentState = GameState.InLevel; // Passe à l'état suivant lorsque nécessaire
+            nextScoreBeforeChangeLevel += ScoreManager.ScoreForNextLevel;
+        }
     }
 
 
@@ -138,7 +138,7 @@ public class LevelManager : MonoBehaviour
 
     void PrintTextIndicator(bool enabled, int number = 0)
     {
-        GO_parentChangeLevelBar.SetActive(false);
+        // GO_parentChangeLevelBar.SetActive(false);
         textIndicator.enabled = enabled;
         textIndicator.text = firstDefaultTextIndicator + number.ToString() + secondDefaultTextIndicator;
     }
@@ -149,6 +149,6 @@ public class LevelManager : MonoBehaviour
         textNewMovement.enabled = true;
         yield return new WaitForSeconds(2f);
         textNewMovement.enabled = false;
-        GO_parentChangeLevelBar.SetActive(true);
+        // GO_parentChangeLevelBar.SetActive(true);
     }
 }

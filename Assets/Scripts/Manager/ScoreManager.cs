@@ -8,82 +8,104 @@ public class ScoreManager : MonoBehaviour
 {
     public int score = 0;
     public int bestScore = 0;
-    public bool scoreIsRunning = false;
+    public int stepScore = 0;
     public TextMeshProUGUI textScore;
 
-    private string defaultText = "Score : ";
-    private bool scoreUpdateInProgress = false;
+    private const string DefaultText = "Score : ";
+    public const int ScoreForNextLevel = 10;
+    public const int TimeBetweenLevel = 5;
+
     private Coroutine scoreCoroutine;
-    private int scoreForNextLevel = 10; // Définissez le nombre de points nécessaires pour passer au niveau suivant
+    private Coroutine stepScoreCoroutine;
 
     public static ScoreManager instance;
 
     void Awake()
     {
-        if (instance != null)
-        {
-            Debug.Log("IL existe déjà une instance de ScoreManager dans cette scène");
-            return;
-        }
         instance = this;
-    }
-
-    void Start()
-    {
-        scoreIsRunning = true;
-        UpdateScoreText();
     }
 
     void Update()
     {
-        if (!scoreUpdateInProgress && scoreIsRunning && GameManager.instance.isRunning && LevelManager.instance.currentState == LevelManager.GameState.InLevel)
+        UpdateCoroutines();
+    }
+
+    void UpdateCoroutines()
+    {
+        if (GameManager.instance.isRunning)
         {
-            scoreUpdateInProgress = true;
-
-            // Arrêter la coroutine existante si elle existe
-            if (scoreCoroutine != null)
-            {
-                StopCoroutine(scoreCoroutine);
-            }
-
-            // Démarrer une nouvelle coroutine
-            scoreCoroutine = StartCoroutine(AddScoreEverySecond());
+            StartScoreCoroutine();
+            StartStepScoreCoroutine();
         }
-        else if (!scoreIsRunning || !GameManager.instance.isRunning || LevelManager.instance.currentState == LevelManager.GameState.BetweenLevels)
+        else
         {
-            // Si le jeu n'est plus en cours ou s'il est entre les niveaux, arrêter la coroutine existante
-            if (scoreCoroutine != null)
-            {
-                StopCoroutine(scoreCoroutine);
-            }
-            scoreCoroutine = null;
-            scoreUpdateInProgress = false;
+            StopScoreCoroutine();
+            StopStepScoreCoroutine();
         }
     }
 
-    IEnumerator AddScoreEverySecond()
+    void StartScoreCoroutine()
+    {
+        if (LevelManager.instance.currentState == LevelManager.GameState.InLevel && scoreCoroutine == null)
+        {
+            scoreCoroutine = StartCoroutine(IncrementScore());
+        }
+    }
+
+    void StopScoreCoroutine()
+    {
+        if (scoreCoroutine != null)
+        {
+            StopCoroutine(scoreCoroutine);
+            scoreCoroutine = null;
+        }
+    }
+
+    void StartStepScoreCoroutine()
+    {
+        if (stepScoreCoroutine == null && GameManager.instance.isRunning)
+        {
+            stepScoreCoroutine = StartCoroutine(IncrementStepScore());
+        }
+    }
+
+    void StopStepScoreCoroutine()
+    {
+        if (stepScoreCoroutine != null)
+        {
+            StopCoroutine(stepScoreCoroutine);
+            stepScoreCoroutine = null;
+        }
+    }
+
+    IEnumerator IncrementScore()
     {
         yield return new WaitForSeconds(1f);
 
-        if (LevelManager.instance.currentState == LevelManager.GameState.InLevel) // Vérifier que le jeu est dans l'état "InLevel"
-        {
-            score++;
-            UpdateScoreText();
+        score++;
+        UpdateScoreText();
 
-            // Vérifier si le score atteint le seuil pour passer au niveau suivant
-            if (score % scoreForNextLevel == 0)
-            {
-                LevelManager.instance.UpdateInLevel(); // Appeler la méthode d'incrémentation du niveau dans le LevelManager
-            }
+        if (score % ScoreForNextLevel == 0)
+        {
+            LevelManager.instance.UpdateInLevel();
         }
 
-        // La coroutine s'arrête ici si le jeu n'est plus en cours ou s'il est entre les niveaux
-        scoreUpdateInProgress = false;
+        scoreCoroutine = null;
+    }
+
+    IEnumerator IncrementStepScore()
+    {
+        yield return new WaitForSeconds(1f);
+
+        stepScore++;
+        // Ajoutez d'autres actions ici si nécessaire
+
+        stepScoreCoroutine = null;
     }
 
     void UpdateScoreText()
     {
-        textScore.text = defaultText + score.ToString();
+        textScore.text = DefaultText + score.ToString();
     }
 
     public void UpdateBestScore()
