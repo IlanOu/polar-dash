@@ -36,10 +36,6 @@ public class SoundsManager : MonoBehaviour
             audioData.PlayOneShot(sound, volume);
             lastPlayedSound = sound;
         }
-        else
-        {
-            Debug.Log("Le son ne peut pas être joué actuellement.");
-        }
     }
 
     public void playJumpSound()
