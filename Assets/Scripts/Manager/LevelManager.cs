@@ -18,7 +18,7 @@ public class LevelManager : MonoBehaviour
 
     // [HideInInspector] public GameObject GO_parentChangeLevelBar;
     public int currentLevel = 1;
-    public int nextScoreBeforeChangeLevel;
+    public int nextTimeBeforeChangeLevel;
     private int currentStepLevel = 0;
 
     [Header("Interfaces")]
@@ -61,8 +61,9 @@ public class LevelManager : MonoBehaviour
 
     void Start()
     {
-        nextScoreBeforeChangeLevel = ScoreManager.ScoreForNextLevel;
-        // changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
+        nextTimeBeforeChangeLevel = ScoreManager.TimeForNextLevel;
+        // ATTENTION ON SE BASE PLUS SUR LE SCORE MAIS SUR LE TIME
+        // changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel); 
         // ChangeActionUX();
         RefreshTextLevel();
     }
@@ -84,35 +85,37 @@ public class LevelManager : MonoBehaviour
     public void UpdateInLevel()
     {
         obstaclesFactory.isGenerationEnabled = true;
+        // ATTENTION ON SE BASE PLUS SUR LE SCORE MAIS SUR LE TIME
         // changeLevelBar.SetValue(ScoreManager.instance.score);
-        /* int numberBeforeChangeLevel = nextScoreBeforeChangeLevel - DataStorage.instance.score;
+        int numberBeforeChangeLevel = nextTimeBeforeChangeLevel - DataStorage.instance.time;
         if (numberBeforeChangeLevel <= 3)
         {
             // PrintTextIndicator(true, numberBeforeChangeLevel);
-        } */
+        }
 
-        if (ScoreManager.instance.stepScore >= nextScoreBeforeChangeLevel)
+        if (ScoreManager.instance.stepTime >= nextTimeBeforeChangeLevel)
         {
             currentState = GameState.BetweenLevels;
             currentLevel++;
             currentStepLevel++;
 
             RefreshTextLevel();
+            // ATTENTION ON SE BASE PLUS SUR LE SCORE MAIS SUR LE TIME
             // changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
             // ChangeMovement();
             
-            nextScoreBeforeChangeLevel += ScoreManager.TimeBetweenLevel;
+            nextTimeBeforeChangeLevel += ScoreManager.TimeBetweenLevel;
         }
     }
 
     void UpdateBetweenLevels()
     {
         obstaclesFactory.isGenerationEnabled = false;
-        if (ScoreManager.instance.stepScore >= nextScoreBeforeChangeLevel)
+        if (ScoreManager.instance.stepTime >= nextTimeBeforeChangeLevel)
         {
             currentStepLevel++;
             currentState = GameState.InLevel; // Passe à l'état suivant lorsque nécessaire
-            nextScoreBeforeChangeLevel += ScoreManager.ScoreForNextLevel;
+            nextTimeBeforeChangeLevel += ScoreManager.TimeForNextLevel;
         }
     }
 

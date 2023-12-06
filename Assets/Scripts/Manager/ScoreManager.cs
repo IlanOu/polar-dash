@@ -7,13 +7,14 @@ using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour
 {
-    public int stepScore = 0;
+    public int scorePerDistance;
+    public int stepTime = 0;
     public TextMeshProUGUI textScore;
-    private const string DefaultText = "Score : ";
-    public const int ScoreForNextLevel = 10;
+    private const string DefaultText = " PTS";
+    public const int TimeForNextLevel = 10;
     public const int TimeBetweenLevel = 5;
 
-    private Coroutine scoreCoroutine;
+    private Coroutine timeCoroutine;
     private Coroutine stepScoreCoroutine;
     
 
@@ -41,6 +42,7 @@ public class ScoreManager : MonoBehaviour
     void Update()
     {
         UpdateCoroutines();
+        UpdateScore();
     }
 
     void UpdateCoroutines()
@@ -59,18 +61,18 @@ public class ScoreManager : MonoBehaviour
 
     void StartScoreCoroutine()
     {
-        if (LevelManager.instance.currentState == LevelManager.GameState.InLevel && scoreCoroutine == null)
+        if (LevelManager.instance.currentState == LevelManager.GameState.InLevel && timeCoroutine == null)
         {
-            scoreCoroutine = StartCoroutine(IncrementScore());
+            timeCoroutine = StartCoroutine(IncrementTime());
         }
     }
 
     void StopScoreCoroutine()
     {
-        if (scoreCoroutine != null)
+        if (timeCoroutine != null)
         {
-            StopCoroutine(scoreCoroutine);
-            scoreCoroutine = null;
+            StopCoroutine(timeCoroutine);
+            timeCoroutine = null;
         }
     }
 
@@ -78,7 +80,7 @@ public class ScoreManager : MonoBehaviour
     {
         if (stepScoreCoroutine == null && GameManager.instance.isRunning)
         {
-            stepScoreCoroutine = StartCoroutine(IncrementStepScore());
+            stepScoreCoroutine = StartCoroutine(IncrementStepTime());
         }
     }
 
@@ -91,34 +93,26 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
-    IEnumerator IncrementScore()
+    IEnumerator IncrementTime()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1f / 10);
+        DataStorage.instance.deciSeconds++;
+        DataStorage.instance.time = (int)(DataStorage.instance.deciSeconds / 10);
 
-        DataStorage.instance.score++;
-        UpdateScoreText();
-
-        if (DataStorage.instance.score % ScoreForNextLevel == 0)
+        if (DataStorage.instance.time % TimeForNextLevel == 0)
         {
             LevelManager.instance.UpdateInLevel();
         }
 
-        scoreCoroutine = null;
+        timeCoroutine = null;
     }
 
-    IEnumerator IncrementStepScore()
+    IEnumerator IncrementStepTime()
     {
         yield return new WaitForSeconds(1f);
 
-        stepScore++;
-        // Ajoutez d'autres actions ici si nécessaire
-
+        stepTime++;
         stepScoreCoroutine = null;
-    }
-
-    void UpdateScoreText()
-    {
-        textScore.text = DefaultText + DataStorage.instance.score.ToString();
     }
 
     public void UpdateDictionnary(string side, string movement)
@@ -139,5 +133,18 @@ public class ScoreManager : MonoBehaviour
                 DataStorage.instance.rightPlayer["jump"]--;
             }
         }
+    }
+
+    private void UpdateScore()
+    {
+        int distance = Mathf.FloorToInt(((DataStorage.instance.speedPenguin / 10) * DataStorage.instance.deciSeconds));
+        DataStorage.instance.distance = distance;
+        DataStorage.instance.score = distance * scorePerDistance;
+        UpdateScoreText();
+    }
+
+    void UpdateScoreText()
+    {
+        textScore.text = DataStorage.instance.score.ToString() + DefaultText;
     }
 }
