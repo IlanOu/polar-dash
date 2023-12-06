@@ -13,8 +13,8 @@ public class LevelManager : MonoBehaviour
 
     public GameState currentState = GameState.InLevel;
 
-    private string firstDefaultTextIndicator = "Changement de mouvement dans ";
-    private string secondDefaultTextIndicator = "...";
+    // private string firstDefaultTextIndicator = "Changement de mouvement dans ";
+    // private string secondDefaultTextIndicator = "...";
 
     // [HideInInspector] public GameObject GO_parentChangeLevelBar;
     public int currentLevel = 1;
@@ -24,7 +24,7 @@ public class LevelManager : MonoBehaviour
     [Header("Interfaces")]
     public TextMeshProUGUI textLevel;
     public TextMeshProUGUI textIndicator;
-    public TextMeshProUGUI textNewMovement;
+    // public TextMeshProUGUI textNewMovement;
     private string defaultTextLevel = "Niveau ";
     public ActionUX leftActionUX;
     public ActionUX rightActionUX;
@@ -63,7 +63,7 @@ public class LevelManager : MonoBehaviour
     {
         nextScoreBeforeChangeLevel = ScoreManager.ScoreForNextLevel;
         // changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
-        ChangeActionUX();
+        // ChangeActionUX();
         RefreshTextLevel();
     }
 
@@ -88,7 +88,7 @@ public class LevelManager : MonoBehaviour
         int numberBeforeChangeLevel = nextScoreBeforeChangeLevel - DataStorage.instance.score;
         if (numberBeforeChangeLevel <= 3)
         {
-            PrintTextIndicator(true, numberBeforeChangeLevel);
+            // PrintTextIndicator(true, numberBeforeChangeLevel);
         }
 
         if (ScoreManager.instance.stepScore >= nextScoreBeforeChangeLevel)
@@ -99,7 +99,7 @@ public class LevelManager : MonoBehaviour
 
             RefreshTextLevel();
             // changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
-            ChangeMovement();
+            // ChangeMovement();
             
             nextScoreBeforeChangeLevel += ScoreManager.TimeBetweenLevel;
         }
@@ -117,38 +117,38 @@ public class LevelManager : MonoBehaviour
     }
 
 
-    void ChangeMovement()
+    /* void ChangeMovement()
     {
         leftMovement = movementList[Random.Range(0, movementList.Length)];
         rightMovement = movementList[Random.Range(0, movementList.Length)];
-        ChangeActionUX();
-        StartCoroutine(PrintTextNewMovement());
-    }
+        // ChangeActionUX();
+        // StartCoroutine(PrintTextNewMovement());
+    } */
 
     void RefreshTextLevel()
     {
         textLevel.text = defaultTextLevel + currentLevel.ToString();
     }
 
-    void ChangeActionUX()
+    /* void ChangeActionUX()
     {
         leftActionUX.PrintImage(leftMovement);
         rightActionUX.PrintImage(rightMovement);
-    }
+    } */
 
-    void PrintTextIndicator(bool enabled, int number = 0)
+    /* void PrintTextIndicator(bool enabled, int number = 0)
     {
         // GO_parentChangeLevelBar.SetActive(false);
         textIndicator.enabled = enabled;
         textIndicator.text = firstDefaultTextIndicator + number.ToString() + secondDefaultTextIndicator;
-    }
+    } */
 
-    IEnumerator PrintTextNewMovement()
+    /* IEnumerator PrintTextNewMovement()
     {
-        PrintTextIndicator(false);
+        // PrintTextIndicator(false);
         textNewMovement.enabled = true;
         yield return new WaitForSeconds(2f);
         textNewMovement.enabled = false;
         // GO_parentChangeLevelBar.SetActive(true);
-    }
+    } */
 }
