@@ -5,8 +5,14 @@ using UnityEngine;
 
 public class DataStorage : MonoBehaviour
 {
+    public float speedPenguin;
     public int score;
     public int bestScore;
+    public int time;
+    public int deciSeconds;
+    public int distance;
+    public int dodgedObstacle;
+    public int burnedCalories;
     public Dictionary<string, int> leftPlayer;
     public Dictionary<string, int> rightPlayer;
     public static DataStorage instance;
