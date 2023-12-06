@@ -8,10 +8,10 @@ using UnityEngine.UI;
 public class ScoreManager : MonoBehaviour
 {
     public int scorePerDistance;
-    public int stepTime = 0;
+    [HideInInspector] public int stepTime = 0;
     public TextMeshProUGUI textScore;
     private const string DefaultText = " PTS";
-    public const int TimeForNextLevel = 10;
+    public const int TimeForNextLevel = 10000;
     public const int TimeBetweenLevel = 5;
 
     private Coroutine timeCoroutine;
