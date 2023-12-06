@@ -1,55 +1,45 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SoundsManager : MonoBehaviour
 {
-    public static SoundsManager instance;
+    // Utilisation du modèle de conception singleton
+    public static SoundsManager instance { get; private set; }
 
-    AudioSource audioData;
+    private AudioSource audioSource;
     public AudioClip jumpSound;
     public AudioClip slideSound;
     public AudioClip deathSound;
 
-    public int volume = 10;
+    [Range(0, 1)] public float volume = 1.0f;  // Utilisation de Range pour définir une plage valide pour le volume
 
-    // Ajoutez une variable pour suivre le dernier son joué
     private AudioClip lastPlayedSound;
 
-    void Awake()
+    private void Awake()
     {
+        // Assure qu'il n'y a qu'une seule instance de SoundsManager dans la scène
         if (instance != null)
         {
-            Debug.Log("Il existe déjà une instance de SoundsManager dans cette scène...");
+            Debug.LogWarning("Il existe déjà une instance de SoundsManager dans cette scène...");
+            Destroy(gameObject);
             return;
         }
-        instance = this;
 
-        audioData = GetComponent<AudioSource>();
+        instance = this;
+        audioSource = GetComponent<AudioSource>();
     }
 
-    public void playSound(AudioClip sound)
+    private void PlaySound(AudioClip sound)
     {
-        // Vérifiez si le son est différent du dernier son joué
-        if ((sound != lastPlayedSound || !audioData.isPlaying) && lastPlayedSound != deathSound)
+        // Vérifie si le son est différent du dernier son joué
+        if (sound != lastPlayedSound || !audioSource.isPlaying)
         {
-            audioData.PlayOneShot(sound, volume);
+            audioSource.PlayOneShot(sound, volume);
             lastPlayedSound = sound;
         }
     }
 
-    public void playJumpSound()
-    {
-        playSound(jumpSound);
-    }
-
-    public void playSlideSound()
-    {
-        playSound(slideSound);
-    }
-
-    public void playDeadSound()
-    {
-        playSound(deathSound);
-    }
+    // Méthodes spécifiques pour jouer des sons particuliers
+    public void PlayJumpSound() => PlaySound(jumpSound);
+    public void PlaySlideSound() => PlaySound(slideSound);
+    public void PlayDeathSound() => PlaySound(deathSound);
 }
