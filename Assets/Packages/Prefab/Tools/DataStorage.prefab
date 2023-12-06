@@ -44,10 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fc3bc5e15e2c694db108af5508a614f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedPenguin: 1.6
+  speedPenguin: 0.7
   score: 0
   bestScore: 0
   time: 0
+  deciSeconds: 0
   distance: 0
   dodgedObstacle: 0
   burnedCalories: 0

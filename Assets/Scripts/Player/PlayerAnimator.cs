@@ -40,22 +40,25 @@ namespace SupanthaPaul
 			float verticalVelocity = m_rb.velocity.y;
 			m_anim.SetFloat(JumpState, verticalVelocity);
 
-			// Jump animation
 
-			if (!m_controller.isGrounded)
-			{
-				m_anim.SetBool(IsJumping, true);
-				SoundsManager.instance.playJumpSound();
-				SoundsManager.instance.playJumpSound();
-			}
-			else
-			{
-				m_anim.SetBool(IsJumping, false);
-			}
-			
-			m_anim.SetBool(IsSliding, m_controller.isSliding);
-			if (m_controller.isSliding){
-				SoundsManager.instance.playSlideSound();
+			if (GameManager.instance.isRunning){
+				// Jump animation
+
+				if (!m_controller.isGrounded)
+				{
+					m_anim.SetBool(IsJumping, true);
+					SoundsManager.instance.PlayJumpSound();
+					SoundsManager.instance.PlayJumpSound();
+				}
+				else
+				{
+					m_anim.SetBool(IsJumping, false);
+				}
+				
+				m_anim.SetBool(IsSliding, m_controller.isSliding);
+				if (m_controller.isSliding){
+					SoundsManager.instance.PlaySlideSound();
+				}
 			}
 
 
@@ -65,7 +68,7 @@ namespace SupanthaPaul
 					m_anim.SetTrigger(Death);
 					wasDead = true;
 				}
-				SoundsManager.instance.playDeadSound();
+				SoundsManager.instance.PlayDeathSound();
 			}
 		}
 

@@ -18,7 +18,7 @@ public class LevelManager : MonoBehaviour
 
     // [HideInInspector] public GameObject GO_parentChangeLevelBar;
     public int currentLevel = 1;
-    public int nextTimeBeforeChangeLevel;
+    [HideInInspector] public int nextTimeBeforeChangeLevel;
     private int currentStepLevel = 0;
 
     [Header("Interfaces")]
@@ -87,11 +87,11 @@ public class LevelManager : MonoBehaviour
         obstaclesFactory.isGenerationEnabled = true;
         // ATTENTION ON SE BASE PLUS SUR LE SCORE MAIS SUR LE TIME
         // changeLevelBar.SetValue(ScoreManager.instance.score);
-        int numberBeforeChangeLevel = nextTimeBeforeChangeLevel - DataStorage.instance.time;
+        /* int numberBeforeChangeLevel = nextTimeBeforeChangeLevel - DataStorage.instance.time;
         if (numberBeforeChangeLevel <= 3)
         {
             // PrintTextIndicator(true, numberBeforeChangeLevel);
-        }
+        } */
 
         if (ScoreManager.instance.stepTime >= nextTimeBeforeChangeLevel)
         {
