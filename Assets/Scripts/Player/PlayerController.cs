@@ -125,7 +125,6 @@ namespace SupanthaPaul
 			// } else
 			if(isJumping && (isGrounded || m_groundedRemember > 0f) && GameManager.instance.isRunning)	// normal single jumping
 			{
-				Debug.Log("JUMP");
 				m_rb.velocity = new Vector2(m_rb.velocity.x, jumpForce);
 				// jumpEffect
 				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
@@ -136,7 +135,6 @@ namespace SupanthaPaul
 			isSliding = !isSliding ? Input.GetKeyDown(KeyCode.S) : true;
 			if (isSliding && isGrounded && GameManager.instance.isRunning)
 			{
-				Debug.Log("SLIDE");
 				// Réduire la taille du BoxCollider pendant la glissade
 				capsuleCollider.size = new Vector2(capsuleCollider.size.x, originalSizeY / 2f);
 

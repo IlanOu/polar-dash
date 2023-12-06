@@ -37,10 +37,11 @@ public class DyingSystem : MonoBehaviour
 
     void DeathPlayer()
     {
-        DataStorage.instance.UpdateBestScore();
         GameManager.instance.isRunning = false;
+        DataStorage.instance.UpdateBestScore();
         StartCoroutine(WaitingForTakingPhoto());
-        StartCoroutine(WaitingForLoadScene());
+        float timeBeforeLoadScene = UIManager.instance.StartTransitionToGameOverScene();
+        StartCoroutine(WaitingBeforeLoadScene(timeBeforeLoadScene));
     }
 
     IEnumerator WaitingForTakingPhoto()
@@ -49,11 +50,9 @@ public class DyingSystem : MonoBehaviour
         DataTreat.instance.SendMessageToTakePhoto();
     }
 
-    IEnumerator WaitingForLoadScene()
+    IEnumerator WaitingBeforeLoadScene(float delay)
     {
-        yield return new WaitForSeconds(3f);
-        GameManager.instance.DisableBeforeGameOverScene();
-        GameManager.instance.AddToDestroyOnLoad();
+        yield return new WaitForSeconds(delay);
         SceneManager.LoadScene("GameOver");
     }
 }
