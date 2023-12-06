@@ -1106,6 +1106,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6722017900382361662, guid: 5f07aef1fc9c04e4492a39f67cef4b34,
+        type: 3}
+      propertyPath: objects.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6722017900382361662, guid: 5f07aef1fc9c04e4492a39f67cef4b34,
+        type: 3}
+      propertyPath: objects.Array.data[2]
+      value: 
+      objectReference: {fileID: 1904057400}
+    - target: {fileID: 6722017900382361662, guid: 5f07aef1fc9c04e4492a39f67cef4b34,
+        type: 3}
+      propertyPath: objects.Array.data[3]
+      value: 
+      objectReference: {fileID: 1819930952}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1510,6 +1525,12 @@ MonoBehaviour:
   present: {fileID: 918684592}
   absent: {fileID: 1501002379}
   sideName: right
+--- !u!1 &1819930952 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4691420273357044757, guid: 3b0fb85a94150014da1747cb073fbaa6,
+    type: 3}
+  m_PrefabInstance: {fileID: 1655303330}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1896371284
 GameObject:
   m_ObjectHideFlags: 0
@@ -1576,6 +1597,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectionMenu: {fileID: 495694654}
   waitingMenu: {fileID: 1063481416}
+--- !u!1 &1904057400 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3116467221887260458, guid: ce671b34bc4a740438898757de347dc9,
+    type: 3}
+  m_PrefabInstance: {fileID: 417031542}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1908870257
 GameObject:
   m_ObjectHideFlags: 0
