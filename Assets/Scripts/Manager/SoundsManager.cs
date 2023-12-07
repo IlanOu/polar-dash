@@ -20,7 +20,7 @@ public class SoundsManager : MonoBehaviour
         if (instance != null)
         {
             Debug.LogWarning("Il existe déjà une instance de SoundsManager dans cette scène...");
-            Destroy(gameObject);
+            Destroy(this.gameObject);
             return;
         }
 
