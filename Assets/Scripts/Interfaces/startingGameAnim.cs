@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class StartingGameAnim : MonoBehaviour
 {
     public Image whiteBackground;
+    public Image floconsBackground;
     public float delayInSeconds = 3f; // Temps en secondes avant que l'image ne devienne opaque
     public float startOpacity = 0.6f; // Opacité initiale
     private float elapsedTime = 0f; // Temps écoulé depuis le début du jeu
@@ -15,6 +16,7 @@ public class StartingGameAnim : MonoBehaviour
     {
         // Ajuste l'alpha initial de l'image
         whiteBackground.color = new Color(whiteBackground.color.r, whiteBackground.color.g, whiteBackground.color.b, startOpacity);
+        floconsBackground.color = new Color(floconsBackground.color.r, floconsBackground.color.g, floconsBackground.color.b, startOpacity);
     }
 
     // Update is called once per frame
@@ -31,6 +33,7 @@ public class StartingGameAnim : MonoBehaviour
 
             // Ajuste l'alpha de l'image en fonction de la progression
             whiteBackground.color = new Color(whiteBackground.color.r, whiteBackground.color.g, whiteBackground.color.b, alpha);
+            floconsBackground.color = new Color(floconsBackground.color.r, floconsBackground.color.g, floconsBackground.color.b, alpha);
         }
         else
         {

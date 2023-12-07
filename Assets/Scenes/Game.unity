@@ -11852,6 +11852,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whiteBackground: {fileID: 1210957517}
+  floconsBackground: {fileID: 600016792}
   delayInSeconds: 3
   startOpacity: 0.6
 --- !u!1660057539 &9223372036854775807
