@@ -50,7 +50,6 @@ public class PlayerHealth : MonoBehaviour
     {
         foreach (RectTransform child in heartsContainer)
         {
-            Debug.Log("Destroying Heart: " + child.name);
             Destroy(child.gameObject);
         }
 

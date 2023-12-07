@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class DataStorage : MonoBehaviour
@@ -15,6 +16,9 @@ public class DataStorage : MonoBehaviour
     public int burnedCalories;
     public Dictionary<string, int> leftPlayer;
     public Dictionary<string, int> rightPlayer;
+    private float jumpCalories = 7.5f;
+    private float squatCalories = 10f;
+    
     public static DataStorage instance;
     void Awake()
     {
@@ -23,6 +27,7 @@ public class DataStorage : MonoBehaviour
         if(instance != null)
         {
             Debug.Log("Il existe déjà une instance de DataStorage dans cette scène");
+            Destroy(this.gameObject);
             return;
         }
         instance = this;
@@ -31,5 +36,12 @@ public class DataStorage : MonoBehaviour
     public void UpdateBestScore()
     {
         bestScore = Math.Max(score, bestScore);
+    }
+
+    public void CalculCalories()
+    {
+        int jump = (int)((leftPlayer["jump"] + rightPlayer["jump"]) * jumpCalories);
+        int squat = (int)((leftPlayer["squat"] + rightPlayer["squat"]) * squatCalories);
+        burnedCalories = jump + squat;
     }
 }
