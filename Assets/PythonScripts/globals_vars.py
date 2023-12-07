@@ -1,6 +1,6 @@
 ## SAVING IMAGE
-STREAMING_ASSETS_PATH = "../StreamingAssets"
-MAX_IMAGE = 3
+STREAMING_ASSETS_PATH = "../StreamingAssets/photos"
+MAX_IMAGE = 50
 
 ## CV2
 WIDTH = 960

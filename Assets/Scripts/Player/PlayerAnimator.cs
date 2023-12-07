@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace SupanthaPaul
 {
 	public class PlayerAnimator : MonoBehaviour
 	{
+		public SpriteRenderer spriteRenderer;
 		private Rigidbody2D m_rb;
 		private PlayerController m_controller;
 		private Animator m_anim;
@@ -13,7 +15,8 @@ namespace SupanthaPaul
 		private static readonly int IsJumping = Animator.StringToHash("IsJumping");
 		private static readonly int WallGrabbing = Animator.StringToHash("WallGrabbing");
 		private static readonly int IsSliding = Animator.StringToHash("IsSliding");
-		private static readonly int IsDying = Animator.StringToHash("IsDying");
+		private static readonly int Death = Animator.StringToHash("Death");
+		private bool wasDead = false;
 
 
 		private void Start()
@@ -26,6 +29,10 @@ namespace SupanthaPaul
 
 		private void Update()
 		{
+			if (PlayerHealth.instance.isTakingDamage && PlayerHealth.instance.currentHealth > 0)
+			{
+				StartCoroutine(DamageAnimation());
+			}
 			// Idle & Running animation
 			m_anim.SetFloat(Move, Mathf.Abs(m_rb.velocity.x));
 
@@ -33,28 +40,35 @@ namespace SupanthaPaul
 			float verticalVelocity = m_rb.velocity.y;
 			m_anim.SetFloat(JumpState, verticalVelocity);
 
-			// Jump animation
 
-			if (!m_controller.isGrounded)
-			{
-				m_anim.SetBool(IsJumping, true);
-				SoundsManager.instance.playJumpSound();
-				SoundsManager.instance.playJumpSound();
-			}
-			else
-			{
-				m_anim.SetBool(IsJumping, false);
-			}
-			
-			m_anim.SetBool(IsSliding, m_controller.isSliding);
-			if (m_controller.isSliding){
-				SoundsManager.instance.playSlideSound();
+			if (GameManager.instance.isRunning){
+				// Jump animation
+
+				if (!m_controller.isGrounded)
+				{
+					m_anim.SetBool(IsJumping, true);
+					SoundsManager.instance.PlayJumpSound();
+					SoundsManager.instance.PlayJumpSound();
+				}
+				else
+				{
+					m_anim.SetBool(IsJumping, false);
+				}
+				
+				m_anim.SetBool(IsSliding, m_controller.isSliding);
+				if (m_controller.isSliding){
+					SoundsManager.instance.PlaySlideSound();
+				}
 			}
 
 
-			m_anim.SetBool(IsDying, DyingSystem.instance.isDead);
 			if (DyingSystem.instance.isDead){
-				SoundsManager.instance.playDeadSound();
+				if (!wasDead)
+				{
+					m_anim.SetTrigger(Death);
+					wasDead = true;
+				}
+				SoundsManager.instance.PlayDeathSound();
 			}
 		}
 
@@ -73,6 +87,19 @@ namespace SupanthaPaul
 			{
 				// Retourner une valeur par défaut si l'animation n'est pas en cours
 				return 0f;
+			}
+		}
+
+		private IEnumerator DamageAnimation()
+		{
+			int nbTimeAnimation = 5;
+			float time = 0.1f;
+			for (int i = 0 ; i < nbTimeAnimation ; i++)
+			{
+				spriteRenderer.enabled = false;
+				yield return new WaitForSeconds(time);
+				spriteRenderer.enabled = true;
+				yield return new WaitForSeconds(time);
 			}
 		}
 	}

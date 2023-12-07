@@ -39,7 +39,7 @@ namespace SupanthaPaul
 		private int m_extraJumps;
 		private float m_extraJumpForce;
 
-		private string actionToPerform;
+		public string actionToPerform;
 
 		private PlayerAnimator playerAnimator;
 
@@ -48,6 +48,7 @@ namespace SupanthaPaul
 		float originalOffsetY;
 
 		private BoxCollider2D boxCollider;
+		private CapsuleCollider2D capsuleCollider;
 
 		void Start()
 		{
@@ -68,9 +69,10 @@ namespace SupanthaPaul
 			playerAnimator = GetComponent<PlayerAnimator>();
 
 			boxCollider = GetComponent<BoxCollider2D>() as BoxCollider2D;
-			originalSizeX = boxCollider.size.x;
-			originalSizeY = boxCollider.size.y;
-			originalOffsetY = boxCollider.offset.y;
+			capsuleCollider = GetComponent<CapsuleCollider2D>() as CapsuleCollider2D;
+			originalSizeX = capsuleCollider.size.x;
+			originalSizeY = capsuleCollider.size.y;
+			originalOffsetY = capsuleCollider.offset.y;
 		}
 
 		private void FixedUpdate()
@@ -95,9 +97,9 @@ namespace SupanthaPaul
 
 		private void Update()
 		{
+			isSliding = false;
+			isJumping = false;
 			CheckMovement();
-			// horizontal input
-			// moveInput = InputSystem.HorizontalRaw();
 
 			if (isGrounded)
 			{
@@ -112,17 +114,17 @@ namespace SupanthaPaul
 			if (!isCurrentlyPlayable) 
 				return;
 
-			// Jumping
-			if(isJumping && m_extraJumps > 0 && !isGrounded)	// extra jumping
+			//* Jumping
+			isJumping = !isJumping ? Input.GetButtonDown("Jump") : true;
+			// if(isJumping && m_extraJumps > 0 && !isGrounded && GameManager.instance.isRunning)	// extra jumping
+			// {
+			// 	m_rb.velocity = new Vector2(m_rb.velocity.x, m_extraJumpForce); ;
+			// 	m_extraJumps--;
+			// 	// jumpEffect
+			// 	PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
+			// } else
+			if(isJumping && (isGrounded || m_groundedRemember > 0f) && GameManager.instance.isRunning)	// normal single jumping
 			{
-				m_rb.velocity = new Vector2(m_rb.velocity.x, m_extraJumpForce); ;
-				m_extraJumps--;
-				// jumpEffect
-				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
-			}
-			else if(actionToPerform == "jump" && (isGrounded || m_groundedRemember > 0f))	// normal single jumping
-			{
-				actionToPerform = "";
 				m_rb.velocity = new Vector2(m_rb.velocity.x, jumpForce);
 				// jumpEffect
 				PoolManager.instance.ReuseObject(jumpEffect, groundCheck.position, Quaternion.identity);
@@ -130,18 +132,19 @@ namespace SupanthaPaul
 			
 			
 			//* ++ Slide
-			isSliding = Input.GetButtonDown("Fire1");
-			if (isSliding && isGrounded)
+			isSliding = !isSliding ? Input.GetKeyDown(KeyCode.S) : true;
+			if (isSliding && isGrounded && GameManager.instance.isRunning)
 			{
 				// Réduire la taille du BoxCollider pendant la glissade
-				boxCollider.size = new Vector2(boxCollider.size.x, originalSizeY / 2f);
+				capsuleCollider.size = new Vector2(capsuleCollider.size.x, originalSizeY / 2f);
 
 				// Ajuster l'origine pour que la boîte de collision diminue du haut vers le bas
-				boxCollider.offset = new Vector2(boxCollider.offset.x, originalOffsetY - originalSizeY / 4f);
+				capsuleCollider.offset = new Vector2(capsuleCollider.offset.x, originalOffsetY - originalSizeY / 4f);
 
 				// Lancer la coroutine pour réinitialiser la taille du collider après un certain délai
 				StartCoroutine(ResetColliderSize(1f));
 			}
+			actionToPerform = "";
 		}
 
 		IEnumerator ResetColliderSize(float delay)
@@ -150,13 +153,13 @@ namespace SupanthaPaul
 			yield return new WaitForSeconds(delay);
 
 			// Remettre la taille du BoxCollider à la normale
-			boxCollider.size = new Vector2(originalSizeX, originalSizeY);
+			capsuleCollider.size = new Vector2(originalSizeX, originalSizeY);
 
 			// Remettre l'origine à sa position d'origine
-			boxCollider.offset = new Vector2(boxCollider.offset.x, originalOffsetY);
+			capsuleCollider.offset = new Vector2(capsuleCollider.offset.x, originalOffsetY);
 
 			// Réactiver la possibilité de glisser
-			isSliding = false;
+			// isSliding = false;
 		}
 
 		void CheckMovement()
@@ -173,6 +176,20 @@ namespace SupanthaPaul
 			}
 			DataTreat.instance.playerSide = "";
 			DataTreat.instance.movementPerformed = "";
+
+			switch (actionToPerform)
+			{
+				case "jump":
+					isJumping = true;
+					break;
+				case "slide":
+					isSliding = true;
+					break;
+				default:
+					isJumping = false;
+					isSliding = false;
+					break;
+			}
 		}
 	}
 }

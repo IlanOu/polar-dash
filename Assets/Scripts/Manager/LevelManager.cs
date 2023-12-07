@@ -1,27 +1,36 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
-
 
 public class LevelManager : MonoBehaviour
 {
+    public enum GameState
+    {
+        InLevel,
+        BetweenLevels
+    }
+
+    public GameState currentState = GameState.InLevel;
+
+    // private string firstDefaultTextIndicator = "Changement de mouvement dans ";
+    // private string secondDefaultTextIndicator = "...";
+
+    // [HideInInspector] public GameObject GO_parentChangeLevelBar;
+    public int currentLevel = 1;
+    [HideInInspector] public int nextTimeBeforeChangeLevel;
+    private int currentStepLevel = 0;
+
+    [Header("Interfaces")]
     public TextMeshProUGUI textLevel;
     public TextMeshProUGUI textIndicator;
-    public TextMeshProUGUI textNewMovement;
+    // public TextMeshProUGUI textNewMovement;
     private string defaultTextLevel = "Niveau ";
-    private string firstDefaultTextIndicator = "Changement de mouvement dans ";
-    private string secondDefaultTextIndicator = "...";
-    public ChangeLevelBar changeLevelBar;
-    [HideInInspector] public GameObject GO_parentChangeLevelBar;
-    public int currentLevel = 1;
-    public int deltaScoreBeforeChangeLevel;
-    private int nextScoreBeforeChangeLevel;
-
     public ActionUX leftActionUX;
     public ActionUX rightActionUX;
+    // public ChangeLevelBar changeLevelBar;
 
+    [Header("Mouvements")]
     [HideInInspector] public string leftMovement;
     [HideInInspector] public string rightMovement;
 
@@ -30,83 +39,119 @@ public class LevelManager : MonoBehaviour
 
     public string[] movementList;
     public string[] actionList;
-    
+
     public static LevelManager instance;
+
+
+    [Header("Génération")]
+    public ObstaclesFactory obstaclesFactory;
+
     void Awake()
     {
-        GO_parentChangeLevelBar = changeLevelBar.transform.parent.gameObject;
+        // GO_parentChangeLevelBar = changeLevelBar.transform.parent.gameObject;
 
         if (instance)
         {
-            Debug.Log("IL existe déjà une instance de LevelManager dans cette scène");
+            Debug.Log("Il existe déjà une instance de LevelManager dans cette scène");
             return;
         }
         instance = this;
     }
+    
 
     void Start()
     {
-        nextScoreBeforeChangeLevel = deltaScoreBeforeChangeLevel;
-
-        changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
-
-        ChangeActionUX();
+        nextTimeBeforeChangeLevel = ScoreManager.TimeForNextLevel;
+        // ATTENTION ON SE BASE PLUS SUR LE SCORE MAIS SUR LE TIME
+        // changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel); 
+        // ChangeActionUX();
         RefreshTextLevel();
     }
-    
+
     void Update()
     {
-        changeLevelBar.SetValue(ScoreManager.instance.score);
-        int numberBeforeChangeLevel = nextScoreBeforeChangeLevel - ScoreManager.instance.score;
-        if (numberBeforeChangeLevel <= 3)
+        switch (currentState)
         {
-            PrintTextIndicator(true, numberBeforeChangeLevel);
-        }
-        // Si on doit changer de level
-        if(ScoreManager.instance.score >= nextScoreBeforeChangeLevel)
-        {
-            nextScoreBeforeChangeLevel += deltaScoreBeforeChangeLevel;
-            currentLevel++;
-            RefreshTextLevel();
+            case GameState.InLevel:
+                UpdateInLevel();
+                break;
 
-            changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
-
-            ChangeMovement();
+            case GameState.BetweenLevels:
+                UpdateBetweenLevels();
+                break;
         }
     }
 
-    void ChangeMovement()
+    public void UpdateInLevel()
+    {
+        obstaclesFactory.isGenerationEnabled = true;
+        // ATTENTION ON SE BASE PLUS SUR LE SCORE MAIS SUR LE TIME
+        // changeLevelBar.SetValue(ScoreManager.instance.score);
+        /* int numberBeforeChangeLevel = nextTimeBeforeChangeLevel - DataStorage.instance.time;
+        if (numberBeforeChangeLevel <= 3)
+        {
+            // PrintTextIndicator(true, numberBeforeChangeLevel);
+        } */
+
+        if (ScoreManager.instance.stepTime >= nextTimeBeforeChangeLevel)
+        {
+            currentState = GameState.BetweenLevels;
+            currentLevel++;
+            currentStepLevel++;
+
+            RefreshTextLevel();
+            // ATTENTION ON SE BASE PLUS SUR LE SCORE MAIS SUR LE TIME
+            // changeLevelBar.SetNewValues(ScoreManager.instance.score, nextScoreBeforeChangeLevel);
+            // ChangeMovement();
+            
+            nextTimeBeforeChangeLevel += ScoreManager.TimeBetweenLevel;
+        }
+    }
+
+    void UpdateBetweenLevels()
+    {
+        obstaclesFactory.isGenerationEnabled = false;
+        if (ScoreManager.instance.stepTime >= nextTimeBeforeChangeLevel)
+        {
+            currentStepLevel++;
+            currentState = GameState.InLevel; // Passe à l'état suivant lorsque nécessaire
+            nextTimeBeforeChangeLevel += ScoreManager.TimeForNextLevel;
+        }
+    }
+
+
+    /* void ChangeMovement()
     {
         leftMovement = movementList[Random.Range(0, movementList.Length)];
         rightMovement = movementList[Random.Range(0, movementList.Length)];
-        ChangeActionUX();
-        StartCoroutine(PrintTextNewMovement());
-    }
+        // ChangeActionUX();
+        // StartCoroutine(PrintTextNewMovement());
+    } */
 
     void RefreshTextLevel()
     {
         textLevel.text = defaultTextLevel + currentLevel.ToString();
     }
 
-    void ChangeActionUX()
+    /* void ChangeActionUX()
     {
         leftActionUX.PrintImage(leftMovement);
         rightActionUX.PrintImage(rightMovement);
-    }
-    
-    void PrintTextIndicator(bool enabled, int number = 0)
+    } */
+
+    /* void PrintTextIndicator(bool enabled, int number = 0)
     {
-        GO_parentChangeLevelBar.SetActive(false);
+        // GO_parentChangeLevelBar.SetActive(false);
         textIndicator.enabled = enabled;
         textIndicator.text = firstDefaultTextIndicator + number.ToString() + secondDefaultTextIndicator;
-    }
+    } */
 
-    IEnumerator PrintTextNewMovement()
+    /* IEnumerator PrintTextNewMovement()
     {
-        PrintTextIndicator(false);
+        // PrintTextIndicator(false);
         textNewMovement.enabled = true;
         yield return new WaitForSeconds(2f);
         textNewMovement.enabled = false;
-        GO_parentChangeLevelBar.SetActive(true);
-    }
+        // GO_parentChangeLevelBar.SetActive(true);
+    } */
 }

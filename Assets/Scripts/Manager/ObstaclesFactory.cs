@@ -8,50 +8,59 @@ public class ObstaclesFactory : MonoBehaviour
 
     [Header("Spawn Settings")]
     [SerializeField] private int maxObstaclesCount = 10;
-    [SerializeField] private bool isGenerationEnabled = true;
-    [Range(0.5f, 6f)]
-    [SerializeField] private float spawnFrequency = 2f;
+    public bool isGenerationEnabled = true;
+    [Range(0.5f, 6f)] [SerializeField] private float spawnFrequency = 2f;
     [SerializeField] private float spawnDistanceToPlayer = 10f;
     
     [Header("Dependencies")]
     [SerializeField] private Transform playerTransform;
     
+    private List<GameObject> instantiatedObstacles = new List<GameObject>();
+    // private float randomRange = 0f;
+    private float timeSinceLastSpawn = 0f;
 
-    List<GameObject> instantiatedObstacles = new List<GameObject>();
-    float randomRange = 0f;
-    float timeSinceLastSpawn = 0f;
-
-
-    private void Update() {
-        if (GameManager.instance.isRunning){
+    private void Update()
+    {
+        if (GameManager.instance.isRunning && isGenerationEnabled)
+        {
             timeSinceLastSpawn += Time.deltaTime;
 
-            if (timeSinceLastSpawn >= spawnFrequency){
-                randomRange = Random.Range(0, spawnDistanceToPlayer/2);
-                createObstacle();
+            if (timeSinceLastSpawn >= spawnFrequency)
+            {
+                GenerateObstacle();
                 timeSinceLastSpawn = 0f;
             }
 
-            destroyOldObstacles();
+            DestroyOldObstacles();
         }
     }
 
-    void createObstacle(){
-        GameObject obj = obstacles[Mathf.RoundToInt(Random.Range(0, obstacles.Count))];
-        Vector3 pos = new Vector3(  playerTransform.position.x + (spawnDistanceToPlayer + randomRange), 
-                                    ObjectsManager.groundHeight, 
-                                    0f);
-        GameObject instantiated = Instantiate(obj, pos, Quaternion.identity);
-        instantiatedObstacles.Add(instantiated);
-        
+    private void GenerateObstacle()
+    {
+        GameObject selectedObstacle = GetRandomObstacle();
+        Vector3 spawnPosition = CalculateSpawnPosition();
+        GameObject instantiatedObstacle = Instantiate(selectedObstacle, spawnPosition, Quaternion.identity);
+        instantiatedObstacles.Add(instantiatedObstacle);
     }
 
-    void destroyOldObstacles(){
-        if (instantiatedObstacles.Count > maxObstaclesCount){
+    private GameObject GetRandomObstacle()
+    {
+        return obstacles.Count > 0 ? obstacles[Random.Range(0, obstacles.Count)] : null;
+    }
+
+    private Vector3 CalculateSpawnPosition()
+    {
+        return new Vector3(playerTransform.position.x + (spawnDistanceToPlayer + Random.Range(0, spawnDistanceToPlayer / 2)),
+            ObjectsManager.groundHeight, 0f);
+    }
+
+    private void DestroyOldObstacles()
+    {
+        if (instantiatedObstacles.Count > maxObstaclesCount)
+        {
             GameObject obstacleToRemove = instantiatedObstacles[0];
             instantiatedObstacles.RemoveAt(0);
             Destroy(obstacleToRemove);
-
         }
     }
 }
