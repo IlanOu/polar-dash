@@ -14,6 +14,7 @@ public class ReloadManager : MonoBehaviour
     IEnumerator WaitForPresence()
     {
         yield return new WaitForSeconds(time);
+        DataStorage.instance.ResetData();
         if(DataTreat.instance.leftPlayerPresence && DataTreat.instance.rightPlayerPresence)
         {
             SceneManager.LoadScene("Game");
