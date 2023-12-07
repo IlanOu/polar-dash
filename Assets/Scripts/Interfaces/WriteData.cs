@@ -93,10 +93,14 @@ public class WriteData : MonoBehaviour
         yield return new WaitForSeconds(waiting);
         StartCoroutine(StartObjectAnimation(obstacles, textObstaclesDesc, textObstacles, obstaclesTargetPosition, obstaclesTargetSize, obstaclesTargetRotation, textObstaclesDescFontSizeTarget, textObstaclesFontSizeTarget));
         
+        yield return new WaitForSeconds(timeAnimation);
+
         time.SetActive(true);
         yield return new WaitForSeconds(waiting);
         StartCoroutine(StartObjectAnimation(time, textTimeDesc, textTime, timeTargetPosition, timeTargetSize, timeTargetRotation, textTimeDescFontSizeTarget, textTimeFontSizeTarget));
         
+        yield return new WaitForSeconds(timeAnimation);
+
         distance.SetActive(true);
         yield return new WaitForSeconds(waiting);
         StartCoroutine(StartObjectAnimation(distance, textDistanceDesc, textDistance, distanceTargetPosition, distanceTargetSize, distanceTargetRotation, textDistanceDescFontSizeTarget, textDistanceFontSizeTarget));
@@ -109,7 +113,7 @@ public class WriteData : MonoBehaviour
         Vector2 initialPosition = gameObject.GetComponent<RectTransform>().anchoredPosition;
         Vector2 initialSize = gameObject.GetComponent<RectTransform>().sizeDelta;
         Quaternion initialRotation = gameObject.GetComponent<RectTransform>().rotation;
-        float initialDescFontSize = textCaloriesDesc.fontSize;
+        float initialDescFontSize = textDesc.fontSize;
         float initialFontSize = text.fontSize;
 
         while (t < timeAnimation)
