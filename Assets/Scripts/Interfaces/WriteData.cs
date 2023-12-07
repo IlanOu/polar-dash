@@ -5,7 +5,7 @@ using UnityEngine;
 public class WriteData : MonoBehaviour
 {
     [Header("Data smooth animation")]
-    public float time;
+    public float timeAnimation;
     public float edge0;
     public float edge1;
 
@@ -38,6 +38,26 @@ public class WriteData : MonoBehaviour
     public GameObject obstacles;
     public TextMeshProUGUI textObstaclesDesc;
     public TextMeshProUGUI textObstacles;
+    
+    [Header("Time")]
+    public Vector2 timeTargetPosition;
+    public Vector2 timeTargetSize;
+    public float timeTargetRotation;
+    public float textTimeDescFontSizeTarget;
+    public float textTimeFontSizeTarget;
+    public GameObject time;
+    public TextMeshProUGUI textTimeDesc;
+    public TextMeshProUGUI textTime;
+    
+    [Header("Distance")]
+    public Vector2 distanceTargetPosition;
+    public Vector2 distanceTargetSize;
+    public float distanceTargetRotation;
+    public float textDistanceDescFontSizeTarget;
+    public float textDistanceFontSizeTarget;
+    public GameObject distance;
+    public TextMeshProUGUI textDistanceDesc;
+    public TextMeshProUGUI textDistance;
 
     private string defaultTextObstacles = " OBSTACLES";
     void Start()
@@ -59,95 +79,50 @@ public class WriteData : MonoBehaviour
 
         calories.SetActive(true);
         yield return new WaitForSeconds(waiting);
-        StartCoroutine(StartCaloriesAnimation());
+        StartCoroutine(StartObjectAnimation(calories, textCaloriesDesc, textCalories, caloriesTargetPosition, caloriesTargetSize, caloriesTargetRotation, textCaloriesDescFontSizeTarget, textCaloriesFontSizeTarget));
 
-        yield return new WaitForSeconds(time);
+        yield return new WaitForSeconds(timeAnimation);
 
         score.SetActive(true);
         yield return new WaitForSeconds(waiting);
-        StartCoroutine(StartScoreAnimation());
+        StartCoroutine(StartObjectAnimation(score, textScoreDesc, textScore, scoreTargetPosition, scoreTargetSize, scoreTargetRotation, textScoreDescFontSizeTarget, textScoreFontSizeTarget));
 
-        yield return new WaitForSeconds(time);
+        yield return new WaitForSeconds(timeAnimation);
 
         obstacles.SetActive(true);
         yield return new WaitForSeconds(waiting);
-        StartCoroutine(StartObstaclesAnimation());
+        StartCoroutine(StartObjectAnimation(obstacles, textObstaclesDesc, textObstacles, obstaclesTargetPosition, obstaclesTargetSize, obstaclesTargetRotation, textObstaclesDescFontSizeTarget, textObstaclesFontSizeTarget));
+        
+        time.SetActive(true);
+        yield return new WaitForSeconds(waiting);
+        StartCoroutine(StartObjectAnimation(time, textTimeDesc, textTime, timeTargetPosition, timeTargetSize, timeTargetRotation, textTimeDescFontSizeTarget, textTimeFontSizeTarget));
+        
+        distance.SetActive(true);
+        yield return new WaitForSeconds(waiting);
+        StartCoroutine(StartObjectAnimation(distance, textDistanceDesc, textDistance, distanceTargetPosition, distanceTargetSize, distanceTargetRotation, textDistanceDescFontSizeTarget, textDistanceFontSizeTarget));
     }
 
-    IEnumerator StartCaloriesAnimation()
+    IEnumerator StartObjectAnimation(GameObject gameObject, TextMeshProUGUI textDesc, TextMeshProUGUI text, Vector2 targetPosition, Vector2 targetSize, float targetRotation, float descFontSizeTarget, float fontSizeTarget)
     {
         float t = 0f;
 
-        Vector2 initialPosition = calories.GetComponent<RectTransform>().anchoredPosition;
-        Vector2 initialSize = calories.GetComponent<RectTransform>().sizeDelta;
-        Quaternion initialRotation = calories.GetComponent<RectTransform>().rotation;
+        Vector2 initialPosition = gameObject.GetComponent<RectTransform>().anchoredPosition;
+        Vector2 initialSize = gameObject.GetComponent<RectTransform>().sizeDelta;
+        Quaternion initialRotation = gameObject.GetComponent<RectTransform>().rotation;
         float initialDescFontSize = textCaloriesDesc.fontSize;
-        float initialFontSize = textCalories.fontSize;
+        float initialFontSize = text.fontSize;
 
-        while (t < time)
+        while (t < timeAnimation)
         {
             t += Time.deltaTime;
 
-            float smoothStep = Mathf.SmoothStep(edge0, edge1, t / time);
+            float smoothStep = Mathf.SmoothStep(edge0, edge1, t / timeAnimation);
 
-            calories.GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(initialPosition, caloriesTargetPosition, smoothStep);
-            calories.GetComponent<RectTransform>().sizeDelta = Vector2.Lerp(initialSize, caloriesTargetSize, smoothStep);
-            calories.GetComponent<RectTransform>().rotation = Quaternion.Euler(0f, 0f, Mathf.LerpAngle(initialRotation.eulerAngles.z, caloriesTargetRotation, smoothStep));
-            textCaloriesDesc.fontSize = Mathf.Lerp(initialDescFontSize, textCaloriesDescFontSizeTarget, smoothStep);
-            textCalories.fontSize = Mathf.Lerp(initialFontSize, textCaloriesFontSizeTarget, smoothStep);
-
-            yield return null;
-        }
-    }
-    
-    IEnumerator StartScoreAnimation()
-    {
-        float t = 0f;
-
-        Vector2 initialPosition = score.GetComponent<RectTransform>().anchoredPosition;
-        Vector2 initialSize = score.GetComponent<RectTransform>().sizeDelta;
-        Quaternion initialRotation = score.GetComponent<RectTransform>().rotation;
-        float initialDescFontSize = textScoreDesc.fontSize;
-        float initialFontSize = textScore.fontSize;
-
-        while (t < time)
-        {
-            t += Time.deltaTime;
-
-            float smoothStep = Mathf.SmoothStep(edge0, edge1, t / time);
-
-            score.GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(initialPosition, scoreTargetPosition, smoothStep);
-            score.GetComponent<RectTransform>().sizeDelta = Vector2.Lerp(initialSize, scoreTargetSize, smoothStep);
-            score.GetComponent<RectTransform>().rotation = Quaternion.Euler(0f, 0f, Mathf.LerpAngle(initialRotation.eulerAngles.z, scoreTargetRotation, smoothStep));
-            textScoreDesc.fontSize = Mathf.Lerp(initialDescFontSize, textScoreDescFontSizeTarget, smoothStep);
-            textScore.fontSize = Mathf.Lerp(initialFontSize, textScoreFontSizeTarget, smoothStep);
-
-            yield return null;
-        }
-    }
-    
-    IEnumerator StartObstaclesAnimation()
-    {
-        float t = 0f;
-
-        Vector2 initialPosition = obstacles.GetComponent<RectTransform>().anchoredPosition;
-        Vector2 initialSize = obstacles.GetComponent<RectTransform>().sizeDelta;
-        Quaternion initialRotation = obstacles.GetComponent<RectTransform>().rotation;
-        float initialDescFontSize = textObstaclesDesc.fontSize;
-        float initialFontSize = textObstacles.fontSize;
-
-        while (t < time)
-        {
-            t += Time.deltaTime;
-
-            float smoothStep = Mathf.SmoothStep(edge0, edge1, t / time);
-
-            obstacles.GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(initialPosition, obstaclesTargetPosition, smoothStep);
-            obstacles.GetComponent<RectTransform>().sizeDelta = Vector2.Lerp(initialSize, obstaclesTargetSize, smoothStep);
-            obstacles.GetComponent<RectTransform>().rotation = Quaternion.Euler(0f, 0f, Mathf.LerpAngle(initialRotation.eulerAngles.z, obstaclesTargetRotation, smoothStep));
-            textObstaclesDesc.fontSize = Mathf.Lerp(initialDescFontSize, textObstaclesDescFontSizeTarget, smoothStep);
-            textObstacles.fontSize = Mathf.Lerp(initialFontSize, textObstaclesFontSizeTarget, smoothStep);
-
+            gameObject.GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(initialPosition, targetPosition, smoothStep);
+            gameObject.GetComponent<RectTransform>().sizeDelta = Vector2.Lerp(initialSize, targetSize, smoothStep);
+            gameObject.GetComponent<RectTransform>().rotation = Quaternion.Euler(0f, 0f, Mathf.LerpAngle(initialRotation.eulerAngles.z, targetRotation, smoothStep));
+            textDesc.fontSize = Mathf.Lerp(initialDescFontSize, descFontSizeTarget, smoothStep);
+            text.fontSize = Mathf.Lerp(initialFontSize, fontSizeTarget, smoothStep);
 
             yield return null;
         }
