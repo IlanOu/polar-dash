@@ -17,6 +17,7 @@ public class DontDestroyOnLoadScene : MonoBehaviour
         if(instance != null)
         {
             Debug.Log("Il existe déjà une instance de DontDestroyOnLoadScene dans cette scène");
+            Destroy(this.gameObject);
             return;
         }
 
