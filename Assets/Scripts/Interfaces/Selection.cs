@@ -10,6 +10,7 @@ public class Selection : MonoBehaviour
     private string leftMovement;
     private string rightMovement;
     public string gameScene = "Game";
+    public float timeBeforeLoadScene = 3f;
     
     void Update()
     {
@@ -32,12 +33,26 @@ public class Selection : MonoBehaviour
             {
                 // SCENE JEU
                 Debug.Log("GAME");
-                SceneManager.LoadScene(gameScene);
+                // SceneManager.LoadScene(gameScene);
+                float timeBeforeLoadScene = StartingGameAnim.instance.StartTransitionToGameScene();
+                StartCoroutine(WaitingBeforeLoadScene(timeBeforeLoadScene));
             }
         }
         if(Input.GetKeyDown(KeyCode.G))
         {
-            SceneManager.LoadScene(gameScene);
+            float timeBeforeLoadScene = StartingGameAnim.instance.StartTransitionToGameScene();
+
+            Debug.Log("AAAAAAAa " + timeBeforeLoadScene);
+            // SceneManager.LoadScene(gameScene);
+            
+            StartCoroutine(WaitingBeforeLoadScene(timeBeforeLoadScene));
         }
+    }
+
+    
+    IEnumerator WaitingBeforeLoadScene(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene(gameScene);
     }
 }
