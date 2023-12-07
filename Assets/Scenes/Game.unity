@@ -11448,7 +11448,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc9b571a79953ba4385b514d056c3ae8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 50
+  maxHealth: 3
   currentHealth: 0
   heartSpacing: 140
   heartsContainer: {fileID: 1507757764}
