@@ -16,7 +16,7 @@ public class ObstaclesFactory : MonoBehaviour
     [SerializeField] private Transform playerTransform;
     
     private List<GameObject> instantiatedObstacles = new List<GameObject>();
-    private float randomRange = 0f;
+    // private float randomRange = 0f;
     private float timeSinceLastSpawn = 0f;
 
     private void Update()
