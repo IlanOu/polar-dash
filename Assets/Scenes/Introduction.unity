@@ -522,6 +522,7 @@ MonoBehaviour:
   hideTextDelay: 3.4
   showLogoDelay: 5.9
   hideLogoDelay: 6
+  fadeOutDelay: 3
 --- !u!82 &1043548227
 AudioSource:
   m_ObjectHideFlags: 0
