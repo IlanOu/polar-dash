@@ -19,7 +19,7 @@ public class DataTreat : MonoBehaviour
         if (instance != null)
         {
             Debug.Log("Il existe déjà cette instance de DataTreat dans cette scène");
-            Destroy(gameObject);
+            Destroy(this.gameObject);
             return;
         }
         instance = this;
