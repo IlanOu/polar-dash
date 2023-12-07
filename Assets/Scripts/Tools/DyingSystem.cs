@@ -39,6 +39,7 @@ public class DyingSystem : MonoBehaviour
     {
         GameManager.instance.isRunning = false;
         DataStorage.instance.UpdateBestScore();
+        DataStorage.instance.CalculCalories();
         StartCoroutine(WaitingForTakingPhoto());
         float timeBeforeLoadScene = UIManager.instance.StartTransitionToGameOverScene();
         StartCoroutine(WaitingBeforeLoadScene(timeBeforeLoadScene));
