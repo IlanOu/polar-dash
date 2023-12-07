@@ -41,9 +41,6 @@ public class Selection : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.G))
         {
             float timeBeforeLoadScene = StartingGameAnim.instance.StartTransitionToGameScene();
-
-            Debug.Log("AAAAAAAa " + timeBeforeLoadScene);
-            // SceneManager.LoadScene(gameScene);
             
             StartCoroutine(WaitingBeforeLoadScene(timeBeforeLoadScene));
         }
