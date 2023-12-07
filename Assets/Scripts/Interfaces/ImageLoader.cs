@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ImageLoader : MonoBehaviour
 {
     public Image photo;
-    private string pathBegin = "Assets/StreamingAssets/photos/";
+    private string pathBegin = "StreamingAssets/photos/";
 
     void Start()
     {
