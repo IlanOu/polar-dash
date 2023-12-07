@@ -99,7 +99,7 @@ namespace SupanthaPaul
 		{
 			isSliding = false;
 			isJumping = false;
-			// CheckMovement();
+			CheckMovement();
 
 			if (isGrounded)
 			{
