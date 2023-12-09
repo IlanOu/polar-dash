@@ -10,7 +10,6 @@ public class ChangeMenu : MonoBehaviour
     public GameObject introMenu;
     public GameObject waitingMenu;
     public GameObject selectionMenu;
-    public GameObject background;
 
     [Header("Objects")]
     public GameObject objectTextWaitingForPlayer;
@@ -31,6 +30,7 @@ public class ChangeMenu : MonoBehaviour
     {
         textWaitingForPlayer = objectTextWaitingForPlayer.GetComponent<TextMeshProUGUI>();
         // Commencez par le premier état
+        HandleIntroState();
         StartCoroutine(ChangeState());
     }
 
@@ -82,7 +82,7 @@ public class ChangeMenu : MonoBehaviour
     void HandleIntroState()
     {
         // Logique pour l'état Intro
-        ChangeImage(introMenu, false);
+        ChangeImage(introMenu);
     }
 
     void HandleWaitingState(bool leftPlayerPresent, bool rightPlayerPresent)
@@ -106,7 +106,7 @@ public class ChangeMenu : MonoBehaviour
         ChangeImage(selectionMenu);
     }
 
-    void ChangeImage(GameObject objectToActivate, bool backgroundToDeactivate = true)
+    void ChangeImage(GameObject objectToActivate)
     {
         List<GameObject> objectsToDeactivate = new List<GameObject> { introMenu, waitingMenu, selectionMenu };
 
@@ -116,7 +116,5 @@ public class ChangeMenu : MonoBehaviour
         }
 
         objectToActivate.SetActive(true);
-
-        background.SetActive(backgroundToDeactivate);
     }
 }

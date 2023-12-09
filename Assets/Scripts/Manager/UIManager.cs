@@ -37,8 +37,9 @@ public class UIManager : MonoBehaviour
 
     public float StartTransitionToGameOverScene()
     {
-        float x = 0f, y = 0f;
+        float x = 0f, y = -540.26f;
         Vector2 targetPosition = new Vector2(x, y);
+        gameOverUI.SetActive(true);
         StartCoroutine(ActiveTransitionGameOver(targetPosition));
         return time + delay;
     }

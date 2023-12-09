@@ -63,15 +63,15 @@ public class StartingGameAnim : MonoBehaviour
             }
         }else{
             whiteBackground.color = new Color(whiteBackground.color.r, whiteBackground.color.g, whiteBackground.color.b, 1.0f);
-        floconsBackground.color = new Color(floconsBackground.color.r, floconsBackground.color.g, floconsBackground.color.b, 1.0f);
-
-
+            floconsBackground.color = new Color(floconsBackground.color.r, floconsBackground.color.g, floconsBackground.color.b, 1.0f);
         }
     }
 
     public float StartTransitionToGameScene()
     {
-        float x = 0f, y = 0f;
+        float x = 0f, y = 540f;
+        whiteBackground.enabled = true;
+        floconsBackground.enabled = true;
         Vector2 targetPosition = new Vector2(x, y);
         StartCoroutine(ActiveTransitionGame(targetPosition));
         return time + delay;
